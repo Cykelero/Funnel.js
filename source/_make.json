@@ -1,0 +1,12 @@
+{
+	"productName": "funnel.js",
+	
+	"fancyName": "Funnel.js",
+	"version": "0.1",
+	"author": "Nathan Manceaux-Panot (@Cykelero)",
+	"description": "A library to easily write functions which accept varying argument types.",
+	
+	"files": [
+		"Funnel.js"
+	]
+}

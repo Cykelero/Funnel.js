@@ -1,0 +1,12 @@
+notes/*
+build/*
+workingSource/sandbox.js
+
+# osx noise
+.DS_Store
+profile
+
+
+# svn & cvs
+.svn
+CVS

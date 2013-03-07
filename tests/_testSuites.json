@@ -1,0 +1,10 @@
+{
+	"testeeName": "Funnel",
+	"includeJS": [
+		"../workingSource/build.php?returnSource=true"
+	],
+	
+	"testSuites": [
+		
+	]
+}
