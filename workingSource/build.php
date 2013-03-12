@@ -1,6 +1,6 @@
 <?php
 
-/* SVPbuild 0.2 */
+/* SVPbuild 0.3 */
 
 $shouldReturnCompiled = $_GET['returnSource'];
 
@@ -11,6 +11,9 @@ $compiledDestination = '../build/';
 $globalObject = 'window';
 
 $tabCount = 1;
+
+// Constants
+$metadataAreaRegexp = '/\\s*(\\/\\/[^\\n]*\\n\\s*)*/';
 
 // Result initialization
 $compiled = "";
@@ -56,7 +59,7 @@ for ($i = 0 ; $i < count($fileList) ; $i++) {
 	$fileContents = file_get_contents("$sourceFolderPath$filename");
 	
 	
-	preg_match('/\\s*(\\/\\/[^\\n]*\\n\\s*)*/', $fileContents, $fileMetadataAreaResults);
+	preg_match($metadataAreaRegexp, $fileContents, $fileMetadataAreaResults);
 	$fileMetadataArea = $fileMetadataAreaResults[0];
 	
 	preg_match_all('/(^|\\n)\\s*\/\/ ((provides|needs) ([^\\n]+))/', $fileContents, $fileMetadataResults, PREG_SET_ORDER);
@@ -125,8 +128,15 @@ if (count($internalClasses)) {
 
 // // Files
 foreach ($fileList as $filename) {
-	$compiled .= "/* $filename */"."\n";
-	$compiled .= file_get_contents("$sourceFolderPath$filename")."\n";
+	$fileContents = file_get_contents("$sourceFolderPath$filename");
+	
+	// Metadata size?
+	preg_match($metadataAreaRegexp, $fileContents, $fileMetadataAreaResults);
+	$fileMetadataAreaSize = strlen($fileMetadataAreaResults[0]);
+	
+	// Appending
+	$compiled .= "/* $filename */"."\n\n";
+	$compiled .= substr($fileContents, $fileMetadataAreaSize)."\n";
 	
 	$scriptTagsList .= $tabs.'<script type="text/javascript" src="'.$sourceFolderPath.$filename.'"></script>'."\n";
 }
