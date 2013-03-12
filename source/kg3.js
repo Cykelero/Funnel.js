@@ -1,4 +1,4 @@
-/* KG3.js 0.1 - Nathan Manceaux-Panot (@Cykelero) */
+/* KG3.js 0.2 - Nathan Manceaux-Panot (@Cykelero) */
 /* A library to define and apply arbitrary grammars. */
 
 (function(_global_) {
@@ -103,7 +103,7 @@ common.exposed = function(behavior) {
 				this.usingPatternWithData(pattern, internal.data, position, behavior, failBehavior);
 			},
 			usingPatternWithData: function(pattern, data, position, behavior, failBehavior) {
-				if (typeof(pattern) != "function") pattern = common.internal.patternFromNative(pattern);
+				pattern = common.internal.castToPattern(pattern);
 				
 				var acceptFails = !failBehavior;
 				if (typeof(failBehavior) != "function") failBehavior = null;
@@ -173,7 +173,9 @@ common.exposed = function(behavior) {
 // Internal
 common.internal = {};
 
-common.internal.patternFromNative = function(value) {
+common.internal.castToPattern = function(value) {
+	if (value && value.isPatternFactory) return value;
+	
 	if (value instanceof RegExp) {
 		// Regular expression
 		return function() {
@@ -194,6 +196,8 @@ common.internal.patternFromNative = function(value) {
 				}
 			});
 		}
+	} else if (typeof(value) == "function") {
+		return common.internal.castToPattern(value());
 	} else {
 		// Anything else (converted to string)
 		var string = value.toString(),
@@ -229,19 +233,25 @@ return common.exposed;
 })();
 
 /* KG3.js */
-// provides KG3
-
-// needs +Pattern.js
 
 var KG3 = (function() {
 
 // Exposed
-var KG3 = exposed = {};
+var exposed = {},
+	KG3 = exposed;
 
 exposed.pattern = function(behavior) {
-	return function(data, position) {
+	var patternFactory = function(data, position) {
 		return (new KG3Pattern(behavior)).init(data, position);
 	};
+	patternFactory.isPatternFactory = true;
+	return patternFactory;
+}
+
+exposed.patternUsingPattern = function(pattern, behavior, failBehavior) {
+	return exposed.pattern(function(data, position) {
+		this.usingPattern(pattern, position, behavior, failBehavior);
+	});
 }
 
 exposed.meta = {
