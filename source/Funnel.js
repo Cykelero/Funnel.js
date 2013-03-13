@@ -1,25 +1,17 @@
 // provides Funnel
 
+// needs +Instance.js
+
 var Funnel = (function() {
 
-var common = {};
-
 // Exposed
-common.exposed = function() {
-	var exposed = this;
-	var internal = {};
-	var self = this;
-	
-	// Exposed methods
-	
-	// Internal methods
-	
-	// Init
-	
+var exposed = function(firstSignature) {
+	var instance = new FunnelInstance();
+	return instance.getRemote()(firstSignature);
 };
 
 // Internal
-common.internal = {};
+var internal = {};
 
-return common.exposed;
+return exposed;
 })();
