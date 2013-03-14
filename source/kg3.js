@@ -1,7 +1,9 @@
 /* KG3.js 0.2 - Nathan Manceaux-Panot (@Cykelero) */
 /* A library to define and apply arbitrary grammars. */
 
-(function(_global_) {
+var KG3;
+
+(function() {
 
 /* kG3Pattern.js */
 
@@ -234,7 +236,7 @@ return common.exposed;
 
 /* KG3.js */
 
-var KG3 = (function() {
+KG3 = (function() {
 
 // Exposed
 var exposed = {},
@@ -434,7 +436,4 @@ exposed.meta = {
 return exposed;
 })();
 
-
-_global_.KG3 = KG3;
-
-})(window);
+})();
