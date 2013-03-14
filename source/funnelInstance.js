@@ -12,8 +12,9 @@ common.exposed = function() {
 	var internal = {};
 	var self = this;
 	
+	internal.currentSignature = null;
 	internal.signatures = [];
-	internal.naked = null;
+	internal.nakedFunction = null;
 	
 	internal.remote = null;
 	
@@ -23,12 +24,12 @@ common.exposed = function() {
 	};
 	
 	// Internal methods
-	internal.getAugmented = function() {
+	internal.getAugmentedFunction = function() {
 		var augmented = function() {
-			// Use the `naked` attribute of this function to see the wrapped code
+			// Use the `naked` attribute of this function to access the wrapped code
 			return internal.callWithArguments(this, arguments);
 		};
-		augmented.naked = internal.naked;
+		augmented.naked = internal.nakedFunction;
 		
 		return augmented;
 	};
@@ -37,25 +38,25 @@ common.exposed = function() {
 		for (var i = 0 ; i < internal.signatures.length ; i++) {
 			var mappedArguments = internal.signatures[i].applyTo(self, args);
 			if (mappedArguments) {
-				return internal.naked.call(self, mappedArguments); // actually I have to inject stuff, but fukkit for now
+				return internal.nakedFunction.call(self, mappedArguments); // [todo] write (and make use of) Injector.js
 			};
 		}
-		return null; // meh. I have to define how to define fail behavior.
+		return null; // [todo] define how to define fail behavior.
 	};
 	
-	// Init
-	internal.currentSignature = null;
-	internal.remote = Remote.make(this, function(arg) {
+	var baseRemoteMethod = function(arg) {
 		if (typeof(arg) == "string") {
 			// Creating a new FunnelInstanceSignature
 			internal.currentSignature = new FunnelInstanceSignature(arg);
 			internal.signatures.push(internal.currentSignature);
 		} else if (typeof(arg) == "function") {
-			// Returning the augmented function
-			internal.naked = arg;
-			return internal.getAugmented();
+			// Finalizing; returning the augmented function
+			internal.nakedFunction = arg;
+			return internal.getAugmentedFunction();
 		}
-	}, {
+	};
+	
+	var remoteMethods = {
 		set: function(a, b) {
 			var parameters = common.internal.formatFunctionParameters(a, b);
 			
@@ -64,7 +65,10 @@ common.exposed = function() {
 				valueProvider: parameters.valueProvider
 			});
 		}
-	});
+	};
+	
+	// Init
+	internal.remote = Remote.make(this, baseRemoteMethod, remoteMethods);
 };
 
 // Internal
