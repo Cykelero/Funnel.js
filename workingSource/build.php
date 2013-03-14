@@ -1,14 +1,12 @@
 <?php
 
-/* SVPbuild 0.3 */
+/* SVPbuild 0.4 */
 
 $shouldReturnCompiled = $_GET['returnSource'];
 
 // Parameters
 $sourceFolderPath = '../source/';
 $compiledDestination = '../build/';
-
-$globalObject = 'window';
 
 $tabCount = 1;
 
@@ -114,8 +112,15 @@ if ($description) $compiled .= '/* '.$description.' */'."\n";
 
 $compiled .= "\n";
 
+// // Exposed classes
+foreach ($provided as $providedName) {
+	$compiled .= "var $providedName;"."\n";
+}
 
-$compiled .= '(function(_global_) {'."\n\n";
+$compiled .= "\n";
+
+// // Wrapping
+$compiled .= '(function() {'."\n\n";
 
 // // Prereferences
 if (count($internalClasses)) {
@@ -130,24 +135,19 @@ if (count($internalClasses)) {
 foreach ($fileList as $filename) {
 	$fileContents = file_get_contents("$sourceFolderPath$filename");
 	
-	// Metadata size?
+	// Stripping metadata
 	preg_match($metadataAreaRegexp, $fileContents, $fileMetadataAreaResults);
 	$fileMetadataAreaSize = strlen($fileMetadataAreaResults[0]);
+	$fileContents = substr($fileContents, $fileMetadataAreaSize);
 	
 	// Appending
 	$compiled .= "/* $filename */"."\n\n";
-	$compiled .= substr($fileContents, $fileMetadataAreaSize)."\n";
+	$compiled .= $fileContents."\n";
 	
 	$scriptTagsList .= $tabs.'<script type="text/javascript" src="'.$sourceFolderPath.$filename.'"></script>'."\n";
 }
 
-// // Exposed classes
-$compiled .= "\n";
-foreach ($provided as $providedName) {
-	$compiled .= "_global_.$providedName = $providedName;"."\n";
-}
-
-$compiled .= "\n"."})($globalObject);\n";
+$compiled .= "})();\n";
 
 // Writing, returning
 file_put_contents($compiledDestination.$productName, $compiled);

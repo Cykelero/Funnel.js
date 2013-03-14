@@ -2,7 +2,7 @@
 
 // needs +Instance.js
 
-var Funnel = (function() {
+Funnel = (function() {
 
 // Exposed
 var exposed = function(firstSignature) {
