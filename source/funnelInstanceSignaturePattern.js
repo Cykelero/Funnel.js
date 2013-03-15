@@ -1,32 +1,41 @@
-// provides FunnelInstanceSignaturePattern
-
 // needs kg3.js
 
 var FunnelInstanceSignaturePattern = (function() {
 
 var signaturePatterns = {
-	// Data aggregation
-	root: KG3.patternUsingPattern(function() {
-		return KG3.meta.repeat(KG3.meta.whsp(signaturePatterns.nameTypePairs), ",");
+	// Root
+	root: function(stringSignature) {
+		return signaturePatterns.namedValueList(stringSignature);
+	},
+	
+	// Named value list
+	namedValueList: KG3.patternUsingPattern(function() {
+		return signaturePatterns.nameTypePairs;
 	}, function(result) {
-		var nameTypePairs = [];
+		this.return({
+			matches: true,
+			takes: result.takes,
+			produces: arglistPatterns.mapArrayToObject(result.produces)
+		});
+	}, this),
+	
+	// Name/type pairs
+	nameTypePairs: KG3.patternUsingPattern(function() {
+		return KG3.meta.repeat(KG3.meta.whsp(KG3.meta.either([signaturePatterns.nameTypePair])), ","); // , signaturePatterns.eitherNameTypePairs
+	}, function(result) {
+		var produced = [];
 		
 		var resultProduct = result.produces;
 		for (var i = 0 ; i < resultProduct.length ; i++) {
-			nameTypePairs.push.apply(nameTypePairs, resultProduct[i]);
+			produced.push.apply(produced, resultProduct[i]);
 		}
 		
 		this.return({
 			matches: true,
 			takes: result.takes,
-			produces: arglistPatterns.mapArrayToObject(nameTypePairs)
+			produces: produced
 		});
-	}, this),
-	
-	// Name/type pairs
-	nameTypePairs: function() { // here, we should add things to a unique array (like in root), because even nameTypePair shoud return an array (of one element, in its case)
-		return KG3.meta.repeat(KG3.meta.whsp(KG3.meta.either([signaturePatterns.nameTypePair])), ","); //, signaturePatterns.eitherNameTypePairs;
-	},
+	}, true),
 	
 	nameTypePair: KG3.patternUsingPattern(function() {
 		return KG3.meta.list([signaturePatterns.attributeName, KG3.meta.whsp(":"), signaturePatterns.attributeType]);
@@ -34,7 +43,7 @@ var signaturePatterns = {
 		this.return({
 			matches: true,
 			takes: result.takes,
-			produces: arglistPatterns.setNameTypePair(result.produces[0], result.produces[2])
+			produces: [arglistPatterns.setNameTypePair(result.produces[0], result.produces[2])]
 		});
 	}, true),
 	
@@ -105,8 +114,14 @@ var arglistPatterns = {
 return function(signatureString) {
 	var generated = signaturePatterns.root(signatureString).getNext().produces;
 	
-	return function(arglist) {
-		return generated(arglist).getNext().produces;
+	if (generated) {
+		return function(arglist) {
+			return generated(arglist).getNext().produces;
+		}
+	} else {
+		return function() {
+			return null;
+		}
 	}
 }
 
