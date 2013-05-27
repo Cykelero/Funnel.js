@@ -1,6 +1,6 @@
 <?php
 
-/* SVPbuild 0.4 */
+/* SVPbuild 0.7 */
 
 $shouldReturnCompiled = $_GET['returnSource'];
 
@@ -12,6 +12,7 @@ $tabCount = 1;
 
 // Constants
 $metadataAreaRegexp = '/\\s*(\\/\\/[^\\n]*\\n\\s*)*/';
+$maxDepencyOrderingIterationCount = 10000;
 
 // Result initialization
 $compiled = "";
@@ -19,9 +20,12 @@ $scriptTagsList = "";
 
 $provided = array();
 $internalClasses = array();
+$urlList = array();
 $tabs = str_repeat("\t", $tabCount);
 
+$libraryList = null;
 $fileList = null;
+$staticFileList = null;
 $productName = null;
 
 $fancyName = null;
@@ -32,9 +36,17 @@ $description = null;
 // Makefile parsing
 $makefileContents = file_get_contents($sourceFolderPath.'_make.json');
 
+preg_match('/"libraries"\s*:\s*\\[(([^a]|a)+?)\\]/', $makefileContents, $libraryStringListResults);
+preg_match_all('/"([^"]+)"/', $libraryStringListResults[1], $libraryListResults);
+$libraryList = $libraryListResults[1];
+
 preg_match('/"files"\s*:\s*\\[(([^a]|a)+?)\\]/', $makefileContents, $fileStringListResults);
 preg_match_all('/"([^"]+)"/', $fileStringListResults[1], $fileListResults);
 $fileList = $fileListResults[1];
+
+preg_match('/"staticFiles"\s*:\s*\\[(([^a]|a)+?)\\]/', $makefileContents, $stringStaticFileListResults);
+preg_match_all('/"([^"]+)"/', $stringStaticFileListResults[1], $staticFileListResults);
+$staticFileList = $staticFileListResults[1];
 
 preg_match('/"productName"\s*:\s*"(([^"]|\\\\")+)"/', $makefileContents, $productNameResults);
 $productName = $productNameResults[1];
@@ -51,11 +63,27 @@ $author = $authorResults[1];
 preg_match('/"description"\s*:\s*"(([^"]|\\\\")+)"/', $makefileContents, $descriptionResults);
 $description = $descriptionResults[1];
 
+// Prepare file info objects
+$fileInfoList = array();
+
+function addFile($url) {
+	global $fileInfoList;
+	$fileInfoList[] = array(
+		"path" => $url,
+		"needs" => array(),
+		"provides" => array()
+	);
+}
+
+foreach ($fileList as $file) {
+	addFile($file);
+}
+
 // File metadata parsing
-for ($i = 0 ; $i < count($fileList) ; $i++) {
-	$filename = $fileList[$i];
-	$fileContents = file_get_contents("$sourceFolderPath$filename");
-	
+for ($i = 0 ; $i < count($fileInfoList) ; $i++) {
+	$file = $fileInfoList[$i];
+	$filepath = $file["path"];
+	$fileContents = file_get_contents("$sourceFolderPath$filepath");
 	
 	preg_match($metadataAreaRegexp, $fileContents, $fileMetadataAreaResults);
 	$fileMetadataArea = $fileMetadataAreaResults[0];
@@ -69,38 +97,74 @@ for ($i = 0 ; $i < count($fileList) ; $i++) {
 		switch ($type) {
 			case 'provides':
 				$provided[] = $data;
+				$fileInfoList[$i]["provides"][] = $data;
 				break;
 			
 			case 'needs':
 				$neededFile = $data;
 				
 				if ($neededFile[0] == '+') {
-					$currentFileInfo = pathinfo($filename);
+					$currentFileInfo = pathinfo($filepath);
 					$extensionLength = strlen($currentFileInfo['extension']);
 					if ($extensionLength) $extensionLength++;
-					$strippedFilename = lcfirst(substr($filename, 0, -$extensionLength));
+					$strippedFilename = lcfirst(substr($filepath, 0, -$extensionLength));
 					
 					$neededFile = $strippedFilename.substr($neededFile, 1);
 				}
 				
-				// Is it already in the list?
-				foreach ($fileList as $fileName) if ($fileName == $neededFile) break 2;
+				$fileInfoList[$i]["needs"][] = $neededFile;
 				
-				$fileList[] = $neededFile;
+				// Is it already in the list?
+				foreach ($fileInfoList as $subFile) {
+					if ($subFile["path"] == $neededFile) {
+						break 2;
+					}
+				}
+				
+				// Not already in the list: add
+				addFile($neededFile);
+				
+				break;
 		}
 	}
 }
 
-// Computing internal classes list (makeshift method)
-foreach ($fileList as $fileName) {
-	$fileInfo = pathinfo($fileName);
+// Compute internal classes list (makeshift method)
+foreach ($fileInfoList as $file) {
+	$filepath = $file["path"];
+	$fileInfo = pathinfo($filepath);
 	$className = ucfirst($fileInfo["filename"]);
 	
 	$internalClasses[] = $className;
 }
 
-// Building
-$fileList = array_reverse($fileList);
+// Dependency ordering
+$fileInfoList = array_reverse($fileInfoList);
+
+$iterationCount = 0;
+while ($iterationCount++ < $maxDepencyOrderingIterationCount) {
+	for ($i = 0 ; $i < count($fileInfoList) ; $i++) {
+		$inspectedFile = $fileInfoList[$i];
+		$needs = $inspectedFile["needs"];
+		
+		for ($j = $i+1 ; $j < count($fileInfoList) ; $j++) {
+			$possibleDependency = $fileInfoList[$j];
+			
+			if (in_array($possibleDependency["path"], $needs)) {
+				// I needs J, but J precedes I
+				array_splice($fileInfoList, $j, 0, array_splice($fileInfoList, $i, 1));
+				continue 3;
+			}
+		}
+	}
+	break;
+}
+
+// Build
+$urlList = $libraryList;
+foreach ($fileInfoList as $file) {
+	$urlList[] = $file["path"];
+}
 
 // // Header
 $compiled .= '/* ';
@@ -119,7 +183,7 @@ foreach ($provided as $providedName) {
 
 $compiled .= "\n";
 
-// // Wrapping
+// // Wrap
 $compiled .= '(function() {'."\n\n";
 
 // // Prereferences
@@ -132,25 +196,33 @@ if (count($internalClasses)) {
 }
 
 // // Files
-foreach ($fileList as $filename) {
-	$fileContents = file_get_contents("$sourceFolderPath$filename");
+foreach ($urlList as $filepath) {
+	$fileContents = file_get_contents("$sourceFolderPath$filepath");
 	
-	// Stripping metadata
+	// Strip metadata
 	preg_match($metadataAreaRegexp, $fileContents, $fileMetadataAreaResults);
 	$fileMetadataAreaSize = strlen($fileMetadataAreaResults[0]);
 	$fileContents = substr($fileContents, $fileMetadataAreaSize);
 	
-	// Appending
-	$compiled .= "/* $filename */"."\n\n";
+	// Append
+	$compiled .= "/* $filepath */"."\n\n";
 	$compiled .= $fileContents."\n";
 	
-	$scriptTagsList .= $tabs.'<script type="text/javascript" src="'.$sourceFolderPath.$filename.'"></script>'."\n";
+	$scriptTagsList .= $tabs.'<script type="text/javascript" src="'.$sourceFolderPath.$filepath.'"></script>'."\n";
 }
 
 $compiled .= "})();\n";
 
-// Writing, returning
+// Write
 file_put_contents($compiledDestination.$productName, $compiled);
+foreach ($staticFileList as $staticFile) {
+	$content = file_get_contents($sourceFolderPath.$staticFile);
+	$content = str_replace("./../build/", "", $content);
+	
+	file_put_contents($compiledDestination.$staticFile, $content);
+}
+
+// Return
 if (!$shouldReturnCompiled) {
 	echo $scriptTagsList;
 } else {
