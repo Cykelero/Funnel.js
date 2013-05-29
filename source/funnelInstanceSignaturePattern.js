@@ -50,13 +50,20 @@ var signaturePatterns = {
 	attributeName: /[a-zA-Z_]\w*/,
 	
 	// Types
-	attributeType: KG3.patternUsingPattern(/\w+/, function(result) {
-		this.return({
-			matches: true,
-			takes: result.takes,
-			produces: arglistPatterns.getValueOfType([result.produces])
-		});
-	}, true)
+	attributeType: function() {
+		return KG3.meta.either(signaturePatterns.attributeTypes);
+	},
+	attributeTypes: [
+		KG3.patternUsingPattern(/\w+/, function(result) {
+			// Native type
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getValueOfType([result.produces])
+			});
+		}, true),
+		
+	]
 };
 
 var arglistPatterns = {
