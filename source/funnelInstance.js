@@ -1,4 +1,5 @@
 // needs remote.js
+// needs injector.js
 // needs +Signature.js
 
 
@@ -15,6 +16,7 @@ common.exposed = function() {
 	internal.currentSignature = null;
 	internal.signatures = [];
 	internal.nakedFunction = null;
+	internal.injectableFunction = null;
 	
 	internal.remote = null;
 	
@@ -31,6 +33,7 @@ common.exposed = function() {
 		} else if (typeof(arg) == "function") {
 			// Finalizing; returning the augmented function
 			internal.nakedFunction = arg;
+			internal.injectableFunction = Injector.prepare(internal.nakedFunction);
 			return internal.getAugmentedFunction();
 		}
 	};
@@ -61,7 +64,7 @@ common.exposed = function() {
 		for (var i = 0 ; i < internal.signatures.length ; i++) {
 			var mappedArguments = internal.signatures[i].applyTo(self, args);
 			if (mappedArguments) {
-				return internal.nakedFunction.call(self, mappedArguments); // [todo] write (and make use of) Injector.js
+				return internal.injectableFunction.call(self, mappedArguments);
 			};
 		}
 		return null; // [todo] define how to define fail behavior.
