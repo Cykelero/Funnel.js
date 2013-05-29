@@ -23,27 +23,6 @@ common.exposed = function() {
 		return internal.remote;
 	};
 	
-	// Internal methods
-	internal.getAugmentedFunction = function() {
-		var augmented = function() {
-			// Use the `naked` attribute of this function to access the wrapped code
-			return internal.callWithArguments(this, arguments);
-		};
-		augmented.naked = internal.nakedFunction;
-		
-		return augmented;
-	};
-	
-	internal.callWithArguments = function(self, args) {
-		for (var i = 0 ; i < internal.signatures.length ; i++) {
-			var mappedArguments = internal.signatures[i].applyTo(self, args);
-			if (mappedArguments) {
-				return internal.nakedFunction.call(self, mappedArguments); // [todo] write (and make use of) Injector.js
-			};
-		}
-		return null; // [todo] define how to define fail behavior.
-	};
-	
 	var baseRemoteMethod = function(arg) {
 		if (typeof(arg) == "string") {
 			// Creating a new FunnelInstanceSignature
@@ -65,6 +44,27 @@ common.exposed = function() {
 				valueProvider: parameters.valueProvider
 			});
 		}
+	};
+	
+	// Internal methods
+	internal.getAugmentedFunction = function() {
+		var augmented = function() {
+			// Use the `naked` attribute of this function to access the wrapped code
+			return internal.callWithArguments(this, arguments);
+		};
+		augmented.naked = internal.nakedFunction;
+		
+		return augmented;
+	};
+	
+	internal.callWithArguments = function(self, args) {
+		for (var i = 0 ; i < internal.signatures.length ; i++) {
+			var mappedArguments = internal.signatures[i].applyTo(self, args);
+			if (mappedArguments) {
+				return internal.nakedFunction.call(self, mappedArguments); // [todo] write (and make use of) Injector.js
+			};
+		}
+		return null; // [todo] define how to define fail behavior.
 	};
 	
 	// Init
