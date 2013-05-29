@@ -16,18 +16,14 @@ this.sayHello = Funnel
 ("name: string, age: number")
 // accepts a string, and a number
 
-("surname?: string, name: string, age: number")
-// accepts two strings and a number, or a string and a number
-
 ("surname: string?, name: string, age: number")
-// does accept undefined, a string and a number
-// does not accept a string and a number
+// accepts either a string and a number, or two strings and a number
 
 ("sex: (string|boolean), age: number")
 // accepts either a string and a number, or a boolean and a number
 
 ("memberList: []")
-// accepts an array
+// accepts any array
 
 ("nameList: [string+]")
 // accepts an array containing one string or more; other types are not allowed
@@ -51,21 +47,21 @@ this.sayHello = Funnel
 // accepts a single array, containing either a string and a number, or two strings
 // the function receives an object, containing the color and position properties
 
-("nameList+: string")
+("nameList: string+")
 // accepts one or more strings as arguments
 // the function receives an array containing those strings, named "nameList"
 
-("students+: string, lecturer: string")
+("students: string+, lecturer: string")
 // accepts n strings, where n >= 2
 // the first (n-1) strings are passed as a "students" array to the function
 // the last string is passed as a "lecturer" string
 
-("students{5,30}: string")
+("students: string{5,30}")
 // accepts 5 to 30 strings as arguments
 // the function receives an array containing those strings, named "students"
 
 ("properties: {}")
-// accepts an object containing anything
+// accepts any object
 
 ("agesByName: {string}")
 // accepts an object containing zero or more strings, but nothing else
