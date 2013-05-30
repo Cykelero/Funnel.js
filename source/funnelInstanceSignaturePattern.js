@@ -126,6 +126,16 @@ var signaturePatterns = {
 				}
 			});
 		}, true),
+		// // Weak repeated
+		KG3.patternUsingPattern("*", function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: function(typePattern) {
+					return KG3.meta.repeat(typePattern, true, 0);
+				}
+			});
+		}, true),
 		// // Repeated
 		KG3.patternUsingPattern("+", function(result) {
 			this.return({
