@@ -119,6 +119,16 @@ var signaturePatterns = {
 					return KG3.meta.optional(typePattern);
 				}
 			});
+		}, true),
+		// // Repeated
+		KG3.patternUsingPattern("+", function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: function(typePattern) {
+					return KG3.meta.repeat(typePattern, true, 1);
+				}
+			});
 		}, true)
 	]
 };
