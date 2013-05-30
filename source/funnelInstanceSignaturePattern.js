@@ -66,22 +66,43 @@ var signaturePatterns = {
 	}, true),
 	
 	innerAttributeType: KG3.patternUsingPattern(function() {
-		return KG3.meta.list([
-			KG3.meta.either(signaturePatterns.attributeTypes),
-			KG3.meta.optional(KG3.meta.whsp(KG3.meta.either(signaturePatterns.quantifiers), 1))
-		]);
+		return KG3.meta.repeat(
+			KG3.meta.list([
+				KG3.meta.either(signaturePatterns.attributeTypes),
+				KG3.meta.optional(KG3.meta.whsp(KG3.meta.either(signaturePatterns.quantifiers), 1))
+			]),
+			KG3.meta.whsp(","),
+			true,
+			1
+		);
 	}, function(result) {
-		var typePattern = result.produces[0],
-			quantifier = result.produces[1];
+		var typePatternList = result.produces,
+			producedList = [],
+			produced;
 		
-		if (quantifier) {
-			typePattern = quantifier(typePattern);
+		for (var i = 0 ; i < typePatternList.length; i++) {
+			var listElement = typePatternList[i];
+			
+			var typePattern = listElement[0],
+				quantifier = listElement[1];
+			 
+			if (quantifier) {
+				typePattern = quantifier(typePattern);
+			}
+			
+			producedList.push(typePattern);
+		}
+		
+		if (producedList.length == 1) {
+			produced = producedList[0];
+		} else {
+			produced = KG3.meta.list(producedList);
 		}
 		
 		this.return({
 			matches: true,
 			takes: result.takes,
-			produces: typePattern
+			produces: produced
 		});
 	}, true),
 	
