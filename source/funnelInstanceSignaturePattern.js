@@ -83,6 +83,20 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getValueOfType([result.produces])
 			});
+		}, true),
+		// Complete type, enclosed in parentheses
+		KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"(",
+				KG3.meta.whsp(signaturePatterns.attributeType),
+				")"
+			]);
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: result.produces[1]
+			});
 		}, true)
 	],
 	quantifiers: [
