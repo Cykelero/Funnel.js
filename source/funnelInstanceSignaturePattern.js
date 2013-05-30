@@ -52,11 +52,16 @@ var signaturePatterns = {
 	// Types
 	attributeType: KG3.patternUsingPattern(function() {
 		return KG3.meta.list([
-			KG3.meta.either(signaturePatterns.attributeTypes),
+			KG3.meta.repeat(
+				KG3.meta.either(signaturePatterns.attributeTypes),
+				KG3.meta.whsp("|"),
+				true,
+				1
+			),
 			KG3.meta.optional(KG3.meta.either(signaturePatterns.quantifiers))
 		]);
 	}, function(result) {
-		var typePattern = result.produces[0],
+		var typePattern = KG3.meta.either(result.produces[0]),
 			quantifier = result.produces[1];
 		
 		if (quantifier) {
