@@ -154,7 +154,17 @@ var arglistPatterns = {
 };
 
 return function(signatureString) {
-	var generated = signaturePatterns.root(signatureString).getNext().produces;
+	var signaturePatternGenerator = signaturePatterns.root(signatureString),
+		result = null,
+		generated;
+	
+	do {
+		result = signaturePatternGenerator.getNext();
+		if (result.takes == signatureString.length) {
+			generated = result.produces;
+			break;
+		}
+	} while (signaturePatternGenerator.hasNext());
 	
 	if (generated) {
 		return function(arglist) {
