@@ -97,7 +97,15 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: result.produces[1]
 			});
-		}, true)
+		}, true),
+		// Array
+		KG3.patternUsingPattern(/\[\s*\]/, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getArrayWithFilter()
+			});
+		}, true),
 	],
 	quantifiers: [
 		// Those patterns merely return wrappers, ready to be filled with patterns
@@ -163,6 +171,29 @@ var arglistPatterns = {
 					break;
 				}
 			}
+		});
+	},
+	getArrayWithFilter: function(filter) {
+		return KG3.pattern(function(data, position) {
+			this.returnFail();
+			
+			var value = data[position];
+			
+			// Must be an array
+			if (value.__proto__ != Array.prototype) return;
+			
+			// Fulfilling the specified conditions
+			if (filter) {
+				var result = filter(value).getNext();
+				
+				if (!result.matches) return;
+			}
+			
+			this.return({
+				matches: true,
+				takes: 1,
+				produces: value
+			});
 		});
 	}
 };
