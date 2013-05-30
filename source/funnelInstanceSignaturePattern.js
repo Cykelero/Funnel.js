@@ -50,9 +50,26 @@ var signaturePatterns = {
 	attributeName: /[a-zA-Z_]\w*/,
 	
 	// Types
-	attributeType: function() {
-		return KG3.meta.either(signaturePatterns.attributeTypes);
-	},
+	attributeType: KG3.patternUsingPattern(function() {
+		return KG3.meta.list([
+			KG3.meta.either(signaturePatterns.attributeTypes),
+			KG3.meta.optional(KG3.meta.either(signaturePatterns.quantifiers))
+		]);
+	}, function(result) {
+		var typePattern = result.produces[0],
+			quantifier = result.produces[1];
+		
+		if (quantifier) {
+			typePattern = quantifier(typePattern);
+		}
+		
+		this.return({
+			matches: true,
+			takes: result.takes,
+			produces: typePattern
+		});
+	}, true),
+	
 	attributeTypes: [
 		KG3.patternUsingPattern(/\w+/, function(result) {
 			// Native type
@@ -61,7 +78,20 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getValueOfType([result.produces])
 			});
-		}, true),
+		}, true)
+	],
+	quantifiers: [
+		// Those patterns merely return wrappers, ready to be filled with patterns
+		KG3.patternUsingPattern(/\s*\?/	, function(result) {
+			// Optional
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: function(typePattern) {
+					return KG3.meta.optional(typePattern);
+				}
+			});
+		}, true)
 		
 	]
 };
