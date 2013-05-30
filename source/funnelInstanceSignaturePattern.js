@@ -100,11 +100,17 @@ var signaturePatterns = {
 			});
 		}, true),
 		// Array
-		KG3.patternUsingPattern(/\[\s*\]/, function(result) {
+		KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"[",
+				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.attributeType)),
+				"]"
+			])
+		}, function(result) {
 			this.return({
 				matches: true,
 				takes: result.takes,
-				produces: arglistPatterns.getArrayWithFilter()
+				produces: arglistPatterns.getArrayWithFilter(result.produces[1])
 			});
 		}, true)
 	],
@@ -194,9 +200,19 @@ var arglistPatterns = {
 			
 			// Fulfilling the specified conditions
 			if (filter) {
-				var result = filter(value).getNext();
+				var preparedFilter = filter(value),
+					result = null,
+					success = false;
 				
-				if (!result.matches) return;
+				while (preparedFilter.hasNext()) {
+					result = preparedFilter.getNext();
+					if (result.matches && result.takes == value.length) {
+						success = true;
+						break;
+					}
+				}
+				
+				if (!success) return;
 			}
 			
 			this.return({
