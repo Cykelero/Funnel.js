@@ -176,6 +176,39 @@ var signaturePatterns = {
 					return KG3.meta.repeat(typePattern, true, 1);
 				}
 			});
+		}, true),
+		// // Specific repeated
+		KG3.patternUsingPattern(KG3.meta.list([
+			"{",
+			KG3.meta.whsp(/\d*/),
+			",",
+			KG3.meta.whsp(/\d*/),
+			"}"
+		]), function(result) {
+			var source = result.produces;
+			
+			var min = source[1],
+				max = source[3];
+			
+			if (min.length) {
+				min = parseInt(min);
+			} else {
+				min = 0;
+			}
+			
+			if (max.length) {
+				max = parseInt(max);
+			} else {
+				max = Number.POSITIVE_INFINITY;
+			}
+			
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: function(typePattern) {
+					return KG3.meta.repeat(typePattern, true, min, max);
+				}
+			});
 		}, true)
 	]
 };
