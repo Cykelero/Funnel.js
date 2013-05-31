@@ -10,7 +10,7 @@ var signaturePatterns = {
 	
 	// Named value list
 	namedValueList: KG3.patternUsingPattern(function() {
-		return signaturePatterns.nameTypePairs;
+		return signaturePatterns.nameTypePairs(arglistPatterns.setNameTypePair);
 	}, function(result) {
 		this.return({
 			matches: true,
@@ -20,32 +20,29 @@ var signaturePatterns = {
 	}, this),
 	
 	// Name/type pairs
-	nameTypePairs: KG3.patternUsingPattern(function() {
-		return KG3.meta.repeat(KG3.meta.whsp(KG3.meta.either([signaturePatterns.nameTypePair])), ","); // , signaturePatterns.eitherNameTypePairs
-	}, function(result) {
-		var produced = [];
-		
-		var resultProduct = result.produces;
-		for (var i = 0 ; i < resultProduct.length ; i++) {
-			produced.push.apply(produced, resultProduct[i]);
-		}
-		
-		this.return({
-			matches: true,
-			takes: result.takes,
-			produces: produced
-		});
-	}, true),
+	nameTypePairs: function(innerGeneratedPattern) {
+		return KG3.patternUsingPattern(function() {
+			return KG3.meta.repeat(KG3.meta.whsp(KG3.meta.either([signaturePatterns.nameTypePair(innerGeneratedPattern)])), ",");
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: KG3.meta.list(result.produces)
+			});
+		}, true)
+	},
 	
-	nameTypePair: KG3.patternUsingPattern(function() {
-		return KG3.meta.list([signaturePatterns.attributeName, KG3.meta.whsp(":"), signaturePatterns.attributeType]);
-	}, function(result) {
-		this.return({
-			matches: true,
-			takes: result.takes,
-			produces: [arglistPatterns.setNameTypePair(result.produces[0], result.produces[2])]
-		});
-	}, true),
+	nameTypePair: function(generatedPattern) {
+		return KG3.patternUsingPattern(function() {
+			return KG3.meta.list([signaturePatterns.attributeName, KG3.meta.whsp(":"), signaturePatterns.attributeType]);
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: generatedPattern(result.produces[0], result.produces[2])
+			});
+		}, true)
+	},
 	
 	attributeName: /[a-zA-Z_]\w*/,
 	
@@ -253,9 +250,9 @@ var signaturePatterns = {
 };
 
 var arglistPatterns = {
-	mapArrayToObject: function(nameTypePairs) {
+	mapArrayToObject: function(pairGenerator) {
 		// nameTypePairs is an array of patterns which take elements from the array, and output {name value} objects
-		return KG3.patternUsingPattern(KG3.meta.list(nameTypePairs), function(result) {
+		return KG3.patternUsingPattern(pairGenerator, function(result) {
 			var resultProduct = result.produces;
 			
 			var produced = {};
