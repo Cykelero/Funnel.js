@@ -238,6 +238,19 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getObjectWithKeyFilter(filter, strict)
 			});
+		}, true),
+		// // Native type
+		KG3.patternUsingPattern(KG3.meta.either([
+			/"([^"]|\\")*"/,
+			/'([^']|\\')*'/
+		]), function(result) {
+			var stringToMatch = result.produces.slice(1, -1);
+			
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getValueEqualTo(stringToMatch)
+			});
 		}, true)
 	],
 	quantifiers: [
@@ -359,6 +372,21 @@ var arglistPatterns = {
 					});
 					break;
 				}
+			}
+		});
+	},
+	getValueEqualTo: function(toMatch) {
+		return KG3.pattern(function(data, position) {
+			var value = data[position];
+			
+			if (value == toMatch) {
+				this.return({
+					matches: true,
+					takes: 1,
+					produces: value
+				});
+			} else {
+				this.returnFail();	
 			}
 		});
 	},
