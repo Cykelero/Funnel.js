@@ -1,4 +1,4 @@
-/* KG3.js 0.2 - Nathan Manceaux-Panot (@Cykelero) */
+/* KG3.js 0.3 - Nathan Manceaux-Panot (@Cykelero) */
 /* A library to define and apply arbitrary grammars. */
 
 var KG3;
@@ -110,7 +110,7 @@ common.exposed = function(behavior) {
 				var acceptFails = !failBehavior;
 				if (typeof(failBehavior) != "function") failBehavior = null;
 				
-				var patternInstance = pattern().init(internal.data, position);
+				var patternInstance = pattern().init(data, position);
 				this.branch(function() {
 					var result = patternInstance.getNext();
 					
@@ -118,7 +118,7 @@ common.exposed = function(behavior) {
 						behavior.call(this, result);
 					} else {
 						if (failBehavior) {
-							behavior.call(this, result);
+							failBehavior.call(this, result);
 						} else {
 							this.returnFail();
 						}
