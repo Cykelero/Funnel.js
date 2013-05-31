@@ -179,6 +179,24 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getObjectWithTypeFilter(result.produces[1])
 			});
+		}, true),
+		// Key-constrained object
+		KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"{",
+				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.nameTypePairs(arglistPatterns.getKeyWithFilter))),
+				KG3.meta.optional(KG3.meta.whsp("/", 1)),
+				"}"
+			])
+		}, function(result) {
+			var filter = result.produces[1],
+				strict = !!result.produces[2];
+			
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getObjectWithKeyFilter(filter, strict)
+			});
 		}, true)
 	],
 	quantifiers: [
@@ -393,6 +411,64 @@ var arglistPatterns = {
 				takes: 1,
 				produces: value
 			});
+		});
+	},
+	getObjectWithKeyFilter: function(filter, strict) {
+		return KG3.pattern(function(data, position) {
+			this.returnFail();
+			
+			var value = data[position];
+			
+			if (typeof(value) != "object") return;
+			if (value.__proto__ == Array.prototype) return;
+			
+			var result = filter(value).getNext();
+			
+			if (!result.matches) return;
+			
+			if (strict) {
+				var allowedKeys = [];
+				
+				// Flatten key list
+				crawlKeys(result.produces);
+				function crawlKeys(list) {
+					list.forEach(function(item) {
+						if (typeof(item) == "string") {
+							allowedKeys.push(item);
+						} else {
+							crawlKeys(list);
+						}
+					});
+				}
+				
+				// Check for disallowed keys
+				for (var p in value) {
+					if (value.hasOwnProperty(p)) {
+						if (allowedKeys.indexOf(p) == -1) return;
+					}
+				}
+			}
+			
+			this.return({
+				matches: true,
+				takes: 1,
+				produces: value
+			});
+		});
+	},
+	getKeyWithFilter: function(name, typeFilter) {
+		return KG3.pattern(function(data, position) {
+			var value = data[name];
+			
+			if (typeFilter([value]).getNext().matches) {
+				this.return({
+					matches: true,
+					takes: null,
+					produces: name
+				});
+			} else {
+				this.returnFail();
+			}
 		});
 	}
 };
