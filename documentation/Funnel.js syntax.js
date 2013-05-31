@@ -47,6 +47,9 @@ this.sayHello = Funnel
 // accepts a single array, containing either a string and a number, or two strings
 // the function receives an object, containing the color and position properties
 
+("firstColorStop: [color: string, position: (number | string) /]")
+// same as above, and the array can not contain any additional item
+
 ("nameList: string+")
 // accepts one or more strings as arguments
 // the function receives an array containing those strings, named "nameList"
@@ -69,7 +72,13 @@ this.sayHello = Funnel
 ("characteristics: {string | number | boolean}")
 // accepts an object containing any number of strings, numbers, and booleans, but nothing else
 
-("hours: number, minutes: number | time: string"
+("colorStops: {color: string, position: number}")
+// accepts an object with a “color” key containing a string, and a “position” key containing a number; additional keys are allowed
+
+("colorStops: {color: string, position: number /}")
+// accepts an object with a “color” key containing a string, and a “position” key containing a number; additional keys are not allowed
+
+("hours: number, minutes: number | time: string")
 // accepts either two numbers, or a string
 
 ("password: 'nope.avi'")
