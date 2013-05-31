@@ -149,13 +149,16 @@ var signaturePatterns = {
 			return KG3.meta.list([
 				"[",
 				signaturePatterns.namedValueList,
+				KG3.meta.optional(KG3.meta.whsp("/", 1)),
 				"]"
 			])
 		}, function(result) {
+			var strictMatch = !!result.produces[2];
+			
 			this.return({
 				matches: true,
 				takes: result.takes,
-				produces: arglistPatterns.getArrayAsObject(result.produces[1])
+				produces: arglistPatterns.getArrayAsObject(result.produces[1], strictMatch)
 			});
 		}, true)
 	],
@@ -310,7 +313,7 @@ var arglistPatterns = {
 			});
 		});
 	},
-	getArrayAsObject: function(mapper) {
+	getArrayAsObject: function(mapper, strictMatch) {
 		return KG3.pattern(function(data, position) {
 			this.returnFail();
 			
@@ -321,14 +324,17 @@ var arglistPatterns = {
 			
 			// Mapping
 			this.usingPatternWithData(mapper, value, 0, function(result) {
+				if (strictMatch && result.takes != value.length) {
+					this.returnFail();
+					return;
+				}
+				
 				this.return({
 					matches: true,
 					takes: 1,
 					produces: result.produces
 				});
 			}, true);
-			
-			// MAKE SURE I MATCH EVERYTHING
 		});
 	}
 };
