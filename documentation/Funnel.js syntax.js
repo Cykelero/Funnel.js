@@ -64,7 +64,7 @@ this.sayHello = Funnel
 // the function receives an array containing those strings, named "students"
 
 ("properties: {}")
-// accepts any object
+// accepts any non-primitive type that is not an array
 
 ("agesByName: {string}")
 // accepts an object containing zero or more strings, but nothing else
