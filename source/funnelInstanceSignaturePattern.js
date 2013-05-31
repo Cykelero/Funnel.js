@@ -160,6 +160,14 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getArrayAsObject(result.produces[1], strictMatch)
 			});
+		}, true),
+		// Empty object
+		KG3.patternUsingPattern(/\{\s*\}/, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getAnyObject
+			});
 		}, true)
 	],
 	quantifiers: [
@@ -335,6 +343,22 @@ var arglistPatterns = {
 					produces: result.produces
 				});
 			}, true);
+		});
+	},
+	getAnyObject: function() {
+		return KG3.pattern(function(data, position) {
+			this.returnFail();
+			
+			var value = data[position];
+			
+			if (typeof(value) != "object") return;
+			if (value.__proto__ == Array.prototype) return;
+			
+			this.return({
+				matches: true,
+				takes: 1,
+				produces: value
+			});
 		});
 	}
 };
