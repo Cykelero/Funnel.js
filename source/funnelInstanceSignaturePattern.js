@@ -23,11 +23,30 @@ var signaturePatterns = {
 	nameTypePairs: function(innerGeneratedPattern) {
 		return KG3.patternUsingPattern(function() {
 			return KG3.meta.repeat(
+				signaturePatterns.innerNameTypePairs(innerGeneratedPattern),
+				"|",
+				true,
+				1
+			);
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: KG3.meta.either(result.produces)
+			});
+		}, true)
+	},
+	
+	innerNameTypePairs: function(innerGeneratedPattern) {
+		return KG3.patternUsingPattern(function() {
+			return KG3.meta.repeat(
 				KG3.meta.whsp(KG3.meta.either([
 					signaturePatterns.nameTypePair(innerGeneratedPattern),
 					signaturePatterns.enclosedNameTypePairs(innerGeneratedPattern)
 				])),
-				","
+				",",
+				true,
+				1
 			);
 		}, function(result) {
 			this.return({
