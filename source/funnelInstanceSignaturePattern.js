@@ -168,6 +168,20 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getAnyObject
 			});
+		}, true),
+		// Type-constrained object
+		KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"{",
+				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.attributeType)),
+				"}"
+			])
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getObjectWithTypeFilter(result.produces[1])
+			});
 		}, true)
 	],
 	quantifiers: [
@@ -353,6 +367,29 @@ var arglistPatterns = {
 			
 			if (typeof(value) != "object") return;
 			if (value.__proto__ == Array.prototype) return;
+			
+			this.return({
+				matches: true,
+				takes: 1,
+				produces: value
+			});
+		});
+	},
+	getObjectWithTypeFilter: function(filter) {
+		return KG3.pattern(function(data, position) {
+			this.returnFail();
+			
+			var value = data[position];
+			
+			if (typeof(value) != "object") return;
+			if (value.__proto__ == Array.prototype) return;
+			
+			for (var p in value) {
+				if (value.hasOwnProperty(p)) {
+					var prop = value[p];
+					if (!filter([prop]).getNext().matches) return;
+				}
+			}
 			
 			this.return({
 				matches: true,
