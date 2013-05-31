@@ -143,6 +143,20 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: arglistPatterns.getArrayWithFilter(result.produces[1])
 			});
+		}, true),
+		// Mapped array
+		KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"[",
+				signaturePatterns.namedValueList,
+				"]"
+			])
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getArrayAsObject(result.produces[1])
+			});
 		}, true)
 	],
 	quantifiers: [
@@ -294,6 +308,27 @@ var arglistPatterns = {
 				takes: 1,
 				produces: value
 			});
+		});
+	},
+	getArrayAsObject: function(mapper) {
+		return KG3.pattern(function(data, position) {
+			this.returnFail();
+			
+			var value = data[position];
+			
+			// Must be an array
+			if (value.__proto__ != Array.prototype) return;
+			
+			// Mapping
+			this.usingPatternWithData(mapper, value, 0, function(result) {
+				this.return({
+					matches: true,
+					takes: 1,
+					produces: result.produces
+				});
+			}, true);
+			
+			// MAKE SURE I MATCH EVERYTHING
 		});
 	}
 };
