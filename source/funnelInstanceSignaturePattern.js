@@ -22,7 +22,13 @@ var signaturePatterns = {
 	// Name/type pairs
 	nameTypePairs: function(innerGeneratedPattern) {
 		return KG3.patternUsingPattern(function() {
-			return KG3.meta.repeat(KG3.meta.whsp(KG3.meta.either([signaturePatterns.nameTypePair(innerGeneratedPattern)])), ",");
+			return KG3.meta.repeat(
+				KG3.meta.whsp(KG3.meta.either([
+					signaturePatterns.nameTypePair(innerGeneratedPattern),
+					signaturePatterns.enclosedNameTypePairs(innerGeneratedPattern)
+				])),
+				","
+			);
 		}, function(result) {
 			this.return({
 				matches: true,
@@ -30,6 +36,22 @@ var signaturePatterns = {
 				produces: KG3.meta.list(result.produces)
 			});
 		}, true)
+	},
+	
+	enclosedNameTypePairs: function(innerGeneratedPattern) {
+		return KG3.patternUsingPattern(function() {
+			return KG3.meta.list([
+				"(",
+				KG3.meta.whsp(signaturePatterns.nameTypePairs(innerGeneratedPattern)),
+				")"
+			]);
+		}, function(result) {
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: result.produces[1]
+			});
+		}, true);
 	},
 	
 	nameTypePair: function(generatedPattern) {
@@ -271,14 +293,18 @@ var arglistPatterns = {
 	mapArrayToObject: function(pairGenerator) {
 		// nameTypePairs is an array of patterns which take elements from the array, and output {name value} objects
 		return KG3.patternUsingPattern(pairGenerator, function(result) {
-			var resultProduct = result.produces;
-			
 			var produced = {};
 			
-			for (var i = 0 ; i < resultProduct.length ; i++) {
-				var pair = resultProduct[i];
-				produced[pair.name] = pair.value;
-			}
+			crawlPairs(result.produces);
+			function crawlPairs(list) {
+				list.forEach(function(item) {
+					if (typeof(item.name) == "string") {
+						produced[item.name] = item.value;
+					} else {
+						crawlPairs(item);
+					}
+				});
+			};
 			
 			this.return({
 				matches: true,
