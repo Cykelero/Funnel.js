@@ -351,6 +351,22 @@ var signaturePatterns = {
 					return KG3.meta.repeat(typePattern, true, min, max);
 				}
 			});
+		}, true),
+		// // Specific count
+		KG3.patternUsingPattern(KG3.meta.list([
+			"{",
+			KG3.meta.whsp(/\d/),
+			"}"
+		]), function(result) {
+			var count = parseInt(result.produces[1]);
+			
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: function(typePattern) {
+					return KG3.meta.repeat(typePattern, true, count, count);
+				}
+			});
 		}, true)
 	]
 };
