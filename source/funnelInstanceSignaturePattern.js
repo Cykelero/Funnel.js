@@ -195,16 +195,13 @@ var signaturePatterns = {
 			return KG3.meta.list([
 				"[",
 				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.attributeType)),
-				KG3.meta.optional(KG3.meta.whsp("/", 1)),
 				"]"
 			])
 		}, function(result) {
-			var strictMatch = !!result.produces[2];
-			
 			this.return({
 				matches: true,
 				takes: result.takes,
-				produces: arglistPatterns.getArrayWithFilter(result.produces[1], strictMatch)
+				produces: arglistPatterns.getArrayWithFilter(result.produces[1])
 			});
 		}, true),
 		// Mapped array
@@ -503,7 +500,7 @@ var arglistPatterns = {
 			}
 		});
 	},
-	getArrayWithFilter: function(filter, strict) {
+	getArrayWithFilter: function(filter) {
 		return KG3.pattern(function(data, position) {
 			this.returnFail();
 			
@@ -520,11 +517,9 @@ var arglistPatterns = {
 				
 				while (preparedFilter.hasNext()) {
 					result = preparedFilter.getNext();
-					if (result.matches) {
-						if (!strict || result.takes == value.length) {
-							success = true;
-							break;
-						}
+					if (result.matches && result.takes == value.length) {
+						success = true;
+						break;
 					}
 				}
 				
