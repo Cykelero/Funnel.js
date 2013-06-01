@@ -1,17 +1,33 @@
-/* Basic Funnel.js usage */
+/* Overview of Funnel.js usage */
 
-this.sayHello = Funnel
-	("greeting: string, name?: string")
-(function(name, greeting) {
-	var result = greeting;
-	if (name) result += ", " + name;
-	result += "!";
-	return result;
+this.addDescription = Funnel
+	("pictureName: string, location: string?, year: number?")
+(function(pictureName, location, year) {
+	var description = pictureName;
+	
+	if (location) {
+		description += ", at " + location;
+	}
+	if (year) {
+		description += " (" + year + ")";
+	}
+	
+	return description;
 });
-// Define the accepted argument patterns using the Funnel object as a starting point. The accepted (or computed) arguments are injected into the function you provide; you can use all of them or only some of them, and their order does not matter.
+
+this.addDescription("Mountain stream", "Mount Everest"); // returns “Mountain stream, at Mount Everest”
+
+this.addDescription("First glider", 1900); // returns “First glider (1900)”
+
+this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Family reunion, at Stanley Park (2011)”
+
+// Start by using the Funnel function to describe one or more signatures. After you provide the function to be funneled, a modified version of it is returned, ready to be used according to the signature.
+// When this augmented function is called, Funnel matches the passed arguments with the ones requested by your signature; the resulting values are then injected in your function.
 
 
 /* Sample argument pattern definitions */
+
+// You can use one or multiple signatures to define what arguments your function accepts.
 
 ("name: string, age: number")
 // accepts a string, and a number
@@ -96,11 +112,13 @@ this.sayHello = Funnel
 
 /* Sample filter function calls */
 
+// After arguments have been mapped using a function signature, they can been modified using filter functions.
+
 ("id: string")
 	.set(function element(id) {
 		return document.getElementById(id);
 	})
-// an "element" argument is passed to the function being called
+// an "element" argument is passed to the function being called, in addition to the “id” argument
 // in a .set call, the function name is used for the output argument name
 // arguments are injected into the function
 
