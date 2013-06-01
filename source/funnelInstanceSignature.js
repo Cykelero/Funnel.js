@@ -85,7 +85,7 @@ common.exposed.getFilterFunctionNames = function() {
 common.internal = {};
 
 common.internal.filterFunctions = {
-	define: function(keys, action) {
+	set: function(keys, action) {
 		var args = this.args;
 		keys.forEach(function(key) {
 			args[key] = action(key);
