@@ -55,7 +55,7 @@ This does not apply to specific types.
 
 `finite`: Any number that isn't NaN, and isn't infinite.
 
-`int`: Any integer.
+`integer`: Any integer.
 
 `natural`: Any positive integer.
 
