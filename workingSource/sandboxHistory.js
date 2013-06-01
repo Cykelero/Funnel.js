@@ -41,3 +41,18 @@ testFunc(true, true);
 testFunc(true, false);
 testFunc(true, function() {});
 testFunc(true, window);
+
+
+
+setWidth = Funnel
+	("width: number, height: number")
+	.define(["width", "height"], function() {
+		return this + "px";
+	})
+(function(width, height) {
+	console.log(width);
+	console.log(height);
+})
+
+setWidth(48, 50);
+
