@@ -124,9 +124,9 @@ this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Famil
 
 ("element: htmlElement")
 	.set(function element() {
-		return this.parentNode;
+		return this().parentNode;
 	})
-// functions used for .set calls can use "this" to access the current value of the argument to be (re)defined
+// functions used for .set calls can use "this()" to access the current value of the argument to be (re)defined
 // this works for native values as well
 
 ("element: htmlElement?")

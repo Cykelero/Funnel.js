@@ -47,7 +47,7 @@ testFunc(true, window);
 setWidth = Funnel
 	("width: number, height: number")
 	.set(["width", "height"], function() {
-		return this + "px";
+		return this() + "px";
 	})
 (function(width, height) {
 	console.log(width);

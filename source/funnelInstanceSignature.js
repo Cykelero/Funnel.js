@@ -61,7 +61,11 @@ common.exposed = function(signatureString) {
 			injectedValues._args = args;
 			
 			// Call the action function
-			return info.action.call(args[currentKeyName], injectedValues);
+			return info.action.call(getCurrentKeyValue, injectedValues);
+		};
+		
+		function getCurrentKeyValue() {
+			return args[currentKeyName];
 		};
 		
 		var thisObject = {args: args};
