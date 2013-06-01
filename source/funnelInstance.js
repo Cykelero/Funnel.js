@@ -27,37 +27,53 @@ common.exposed = function() {
 	
 	var baseRemoteMethod = function(arg) {
 		if (typeof(arg) == "string") {
-			// Creating a new FunnelInstanceSignature
-			internal.currentSignature = new FunnelInstanceSignature(arg);
-			internal.signatures.push(internal.currentSignature);
+			internal.addSignature(arg);
 		} else if (typeof(arg) == "function") {
-			// Finalizing; returning the augmented function
-			internal.nakedFunction = arg;
-			internal.injectableFunction = Injector.prepare(internal.nakedFunction);
-			return internal.getAugmentedFunction();
-		}
-	};
-	
-	var remoteMethods = {
-		set: function(a, b) {
-			var parameters = common.internal.formatFunctionParameters(a, b);
-			
-			internal.currentSignature.addPostProcess("set", {
-				attributeNames: parameters.attributeNames,
-				valueProvider: parameters.valueProvider
-			});
+			internal.setFunneledFunction(arg);
+			return internal.makeAugmentedFunction();
 		}
 	};
 	
 	// Internal methods
-	internal.getAugmentedFunction = function() {
-		var augmented = function() {
-			// Use the `naked` attribute of this function to access the wrapped code
-			return internal.callWithArguments(this, arguments);
-		};
-		augmented.naked = internal.nakedFunction;
+	internal.addSignature = function(signatureString) {
+		var newSignature = new FunnelInstanceSignature(signatureString)
 		
-		return augmented;
+		internal.signatures.push(newSignature);
+		internal.currentSignature = newSignature;
+	};
+	
+	internal.addFilterFunction = function(name, args) {
+		var keys, action, extra;
+		
+		var arg0 = args[0],
+			arg1 = args[1],
+			type0 = typeof(arg0),
+			type1 = typeof(arg1);
+		
+		if (type0 == "function") {
+			keys = [arg0.name];
+			action = arg0;
+			extra = args.slice(1);
+		} else if (type0 == "string") {
+			keys = [arg0];
+			action = (type1 == "function")
+				? arg1
+				: function() { return arg1 };
+			extra = args.slice(2);
+		} else if (type0 == "array") {
+			keys = arg0;
+			action = (type1 == "function")
+				? arg1
+				: function() { return arg1 };
+			extra = args.slice(2);
+		}
+		
+		internal.currentSignature.addFilterFunction(name, keys, action, extra);
+	};
+	
+	internal.setFunneledFunction = function(func) {
+		internal.nakedFunction = func;
+		internal.injectableFunction = Injector.prepare(func);
 	};
 	
 	internal.callWithArguments = function(self, args) {
@@ -70,7 +86,27 @@ common.exposed = function() {
 		return null; // [todo] define how to define fail behavior.
 	};
 	
+	internal.makeAugmentedFunction = function() {
+		var augmented = function() {
+			// Use the `naked` attribute of this function to access the wrapped code
+			return internal.callWithArguments(this, arguments);
+		};
+		augmented.naked = internal.nakedFunction;
+		
+		return augmented;
+	};
+	
 	// Init
+	var remoteMethods = {};
+	
+	var filterFunctionNames = FunnelInstanceSignature.getFilterFunctionNames();
+	filterFunctionNames.forEach(function(name) {
+		remoteMethods[name] = function() {
+			var argumentsAsArray = Array.prototype.slice.call(arguments, 0);
+			internal.addFilterFunction(name, argumentsAsArray);
+		};
+	});
+	
 	internal.remote = Remote.make(this, baseRemoteMethod, remoteMethods);
 };
 
