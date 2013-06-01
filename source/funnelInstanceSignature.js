@@ -99,6 +99,9 @@ common.internal = {};
 common.internal.filterFunctions = {
 	set: function(key, action) {
 		this.args[key] = action();
+	},
+	default: function(key, action) {
+		if (this.args[key] === undefined) this.args[key] = action();
 	}
 };
 
