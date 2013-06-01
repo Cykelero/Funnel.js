@@ -45,6 +45,10 @@ This does not apply to specific types.
 
 `number`: Any number, including NaN.
 
+`boolean`: Any boolean
+
+`function`: Any function.
+
 #### Precise numbers
 
 `float`: Any number that isn't NaN.
