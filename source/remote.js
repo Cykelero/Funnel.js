@@ -11,9 +11,11 @@ exposed.make = function(self, baseFunction, methods) {
 	
 	for (var m in methods) {
 		if (methods.hasOwnProperty(m)) {
-			remote[m] = function() {
-				return executeMethod(methods[m], arguments);
-			};
+			remote[m] = (function(m) {
+				return function() {
+					return executeMethod(methods[m], arguments);
+				};
+			})(m);
 		}
 	}
 	
