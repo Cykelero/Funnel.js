@@ -118,9 +118,9 @@ this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Famil
 	.set(function element(id) {
 		return document.getElementById(id);
 	})
-// an "element" argument is passed to the function being called, in addition to the “id” argument
+// an "element" argument is passed to the funneled function, in addition to the “id” argument
 // in a .set call, the function name is used for the output argument name
-// arguments are injected into the function
+// the current values of the arguments are injected into the function
 
 ("element: htmlElement")
 	.set(function element() {
@@ -145,11 +145,11 @@ this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Famil
 	.default(function outputAsText(_args) {
 		return /^text\b/.test(_args["Content-Type"]);
 	})
-// to use arguments that can't be injected because of their name, you can request the injection of the _args map instead
+// to use an argument that can't be injected because of its name, you can request the _args map instead
 
 ("`Content-Type`: string")
 	.default("Content-Type", "text/html")
-// you can also directly define a default value, instead of using a function
+// you can also directly specify a default value, instead of using a function
 
 ("mother: string, father: string")
 	.default(["mother", "father"], "Pat")
@@ -157,11 +157,11 @@ this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Famil
 
 ("gender: string")
 	.in("gender", ["M", "F"])
-// if sex if undefined, or not equal to either "M" or "F", "M" is used instead
+// if gender isn't equal to either "M" or "F", "M" is used instead
 
 ("component: string")
 	.in("component", ["Red", "Green", "Blue"], 2)
-// the default value for component is "Blue", its index in the default array being 2
+// the default value for component is "Blue"
 
 ("availableSizes: array, defaultSize: number")
 	.in(function defaultSize(availableSizes) {
