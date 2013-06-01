@@ -60,7 +60,7 @@ common.exposed = function() {
 				? arg1
 				: function() { return arg1 };
 			extra = args.slice(2);
-		} else if (type0 == "array") {
+		} else if (type0 == "object") {
 			keys = arg0;
 			action = (type1 == "function")
 				? arg1
