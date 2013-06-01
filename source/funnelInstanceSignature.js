@@ -45,14 +45,14 @@ common.exposed = function(signatureString) {
 			// Prepare the injected values
 			injectedValues = {};
 			
+			for (var key in args) {
+				injectedValues[key] = args[key];
+			}
+			
 			if (extraInjectedValues) {
 				for (var key in extraInjectedValues) {
 					injectedValues["_" + key] = extraInjectedValues[key];
 				}
-			}
-			
-			for (var key in args) {
-				injectedValues[key] = args[key];
 			}
 			
 			injectedValues._args = args;
