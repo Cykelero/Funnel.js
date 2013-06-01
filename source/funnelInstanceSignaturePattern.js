@@ -625,9 +625,30 @@ var arglistPatterns = {
 	},
 	getKeyWithFilter: function(name, typeFilter) {
 		return KG3.pattern(function(data, position) {
-			var value = data[name];
+			var value = data[name],
+				preparedFilter = typeFilter([value]),
+				filterResult = preparedFilter.getNext();
 			
-			if (typeFilter([value]).getNext().matches) {
+			var matches;
+			
+			if (value === undefined) {
+				// Value is undefined: match only if the type is optional
+				matches = false;
+				do {
+					matches = (filterResult.matches && !filterResult.takes);
+					if (matches) break;
+					filterResult = preparedFilter.getNext();
+				} while (filterResult.matches);
+			} else {
+				// Value is defined: match only if the type doesn't make use of its (potential) optionality
+				if (filterResult.matches && filterResult.takes > 0) {
+					matches = true;
+				} else {
+					matches = false;
+				}
+			}
+			
+			if (matches) {
 				this.return({
 					matches: true,
 					takes: null,
