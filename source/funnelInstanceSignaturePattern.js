@@ -156,11 +156,24 @@ var signaturePatterns = {
 	attributeTypes: [
 		// Those patterns match type definitions, and return type getter patterns
 		// // Native type
-		KG3.patternUsingPattern(/\w+/, function(result) {
+		KG3.patternUsingPattern(/\w+!?!?/, function(result) {
+			var type = result.produces;
+			
+			var bang = type.slice(-1) == "!",
+				kabang = type.slice(-2, -1) == "!";
+			
+			if (bang) {
+				type = type.slice(0, -1);
+				
+				if (kabang) {
+					type = type.slice(0, -1);
+				}
+			}
+			
 			this.return({
 				matches: true,
 				takes: result.takes,
-				produces: arglistPatterns.getValueOfType([result.produces])
+				produces: arglistPatterns.getValueOfType(type, !bang, !kabang)
 			});
 		}, true),
 		// // Complete type, enclosed in parentheses
@@ -248,7 +261,7 @@ var signaturePatterns = {
 				produces: arglistPatterns.getObjectWithKeyFilter(filter, strict)
 			});
 		}, true),
-		// // Native type
+		// // Specific string
 		KG3.patternUsingPattern(KG3.meta.either([
 			/"([^"]|\\")*"/,
 			/'([^']|\\')*'/
@@ -259,6 +272,18 @@ var signaturePatterns = {
 				matches: true,
 				takes: result.takes,
 				produces: arglistPatterns.getValueEqualTo(stringToMatch)
+			});
+		}, true),
+		// // Specific number
+		KG3.patternUsingPattern(KG3.meta.either([
+			/(\+|\-)\d*.\d*/
+		]), function(result) {
+			var numberToMatch = parseFloat(result.produces);
+			
+			this.return({
+				matches: true,
+				takes: result.takes,
+				produces: arglistPatterns.getValueEqualTo(numberToMatch)
 			});
 		}, true)
 	],
@@ -365,22 +390,82 @@ var arglistPatterns = {
 		}, true);
 	},
 	
-	getValueOfType: function(typeList) {
+	getValueOfType: function(filterType, allowUndefined, allowNull) {
 		return KG3.pattern(function(data, position) {
-			this.returnFail();
-			
 			var value = data[position],
 				valueType = typeof(value);
-						
-			for (var i = 0 ; i < typeList.length ; i++) {
-				if (valueType == typeList[i]) {
-					this.return({
-						matches: true,
-						takes: 1,
-						produces: value
-					});
+				
+			var matches = false,
+				isSpecific = false;
+			
+			switch (filterType) {
+				// Generic
+				case "any":
+					matches = true;
 					break;
+				case "flat":
+					matches = (value === null)
+						|| (valueType != "object");
+					break;
+				// Precise numbers
+				case "float":
+					matches = (valueType == "number" && !isNaN(value));
+					break;
+				case "finite":
+					matches = (valueType == "number") && isFinite(value);
+					break;
+				case "integer":
+					matches = (valueType == "number" && value % 1 == 0);
+					break;
+				case "natural":
+					matches = (valueType == "number" && value % 1 == 0 && value >= 0);
+					break;
+				// Specific values
+				case "true":
+					matches = !!value;
+					isSpecific = true;
+					break;
+				case "false":
+					matches = !value;
+					isSpecific = true;
+					break;
+				case "null":
+					matches = (value === null);
+					isSpecific = true;
+					break;
+				case "undefined":
+					matches = (value === undefined);
+					isSpecific = true;
+					break;
+				default:
+					matches = (valueType == filterType);
+			}
+			
+			if (!isSpecific) {
+				if (value === undefined) {
+					if (allowUndefined) {
+						matches = true;
+					} else {
+						matches = false;
+					}
 				}
+				if (value === null) {
+					if (allowNull) {
+						matches = true;
+					} else {
+						matches = false;
+					}
+				}
+			}
+			
+			if (matches) {
+				this.return({
+					matches: true,
+					takes: 1,
+					produces: value
+				});
+			} else {
+				this.returnFail();
 			}
 		});
 	},
@@ -388,7 +473,7 @@ var arglistPatterns = {
 		return KG3.pattern(function(data, position) {
 			var value = data[position];
 			
-			if (value == toMatch) {
+			if (value === toMatch) {
 				this.return({
 					matches: true,
 					takes: 1,
