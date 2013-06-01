@@ -30,7 +30,55 @@ You can use any character in a name if you enclose it in backticks. For instance
 
 ### Simple types
 
-Simple types, such as `string`, `true`, or `number!`, are described in detail in _Simple types.md_.
+Simple types are flat types such as `string`, `null` or `integer`.
+
+By default, simple types accept `null` and `undefined`. 
+This does not apply to specific types.
+
+#### Generic
+
+`any`: Any value.
+
+`flat`: Any primitive value.
+
+`string`: Any string.
+
+`number`: Any number, including NaN.
+
+#### Precise numbers
+
+`float`: Any number that isn't NaN.
+
+`finite`: Any number that isn't NaN, and isn't infinite.
+
+`int`: Any integer.
+
+`natural`: Any positive integer.
+
+#### Specific
+
+`true`: Any truthy value.
+
+`false`: Any falsy value.
+
+
+`"•••"`: Any string equal to `•••`.
+
+`'•••'`: Any string equal to `•••`.
+
+
+`+•.•`: Any number equal to `•.•`. The decimal part is optional, and negative numbers are valid as well.
+
+
+`null`: Only null.
+
+`undefined`: Only undefined.
+
+#### Modifiers
+
+`!`: When appended to a flat type, disallows `undefined`.
+
+`!!`: When appended to a flat type, disallows both `undefined` and `null`.
 
 ### Arrays
 
