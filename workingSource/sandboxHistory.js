@@ -11,3 +11,33 @@ echoName = Funnel
 });
 
 echoName("John", "Doe");
+
+
+
+testFunc = Funnel
+	("success: boolean, test: flat!")
+	("failure: any, test: any")
+(function(test, success) {
+	if (success) {
+		console.log("#" + test);
+	} else {
+		console.log("%" + test);
+	}
+});
+
+testFunc(true, {});
+testFunc(true, []);
+testFunc(true, new Date());
+testFunc(true, "yay");
+testFunc(true, 32);
+testFunc(true, -32);
+testFunc(true, -3.32);
+testFunc(true, Number.POSITIVE_INFINITY);
+testFunc(true, NaN);
+testFunc(true, undefined);
+testFunc(true, null);
+testFunc(true, "hello");
+testFunc(true, true);
+testFunc(true, false);
+testFunc(true, function() {});
+testFunc(true, window);
