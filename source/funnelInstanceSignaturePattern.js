@@ -86,7 +86,7 @@ var signaturePatterns = {
 	},
 	
 	attributeName: KG3.meta.either([
-		/[a-zA-Z_]\w*/,
+		/[a-zA-Z_$][a-zA-Z_$\d]*/,
 		KG3.patternUsingPattern(/`([^`]|\\`)*`/, function(result) {
 			this.return({
 				matches: true,
