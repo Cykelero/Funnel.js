@@ -94,7 +94,7 @@ Use `[]` to accept any array.
 
 #### Type-constrained arrays
 
-By enclosing a type list in brackets, you can accept arrays containing specific types of items. The following signature only accepts a single array, containing a single string.
+By enclosing a type list in brackets, you can accept arrays containing specific types of items. The following signature accepts a single array containing only a string.
 
 `("baseList: [string]")`
 
@@ -177,7 +177,7 @@ You can however use the `?` quantifier to specify the type of an optional key. F
 Type enumeration allows you to define lists of types. Enumeration can be used in type-constrained arrays, mapped arrays, and implicit arrays.  
 For instance, the following signature only accepts a single array, containing a string and a boolean.
 
-`("data: [string, boolean /]")`
+`("data: [string, boolean]")`
 
 ## Quantifiers
 
@@ -188,28 +188,28 @@ This section will use type-constrained arrays as hosts for the quantifier exampl
 
 Append `?` to any type to make the presence of a value optional. The following signature will accept an array containing either a string, a number, and another string, or containing two strings.
 
-`("data: [string, number?, string /]")`
+`("data: [string, number?, string]")`
 
 ### Zero to infinity
 
-Append `*` to any type to accept any number of this type. The following signature will accept an array containing any number of strings, including none at all.
+Append `*` to any type to accept any number of values of this type. The following signature will accept an array containing any number of strings, including none at all.
 
 `("names: [string*]")`
 
 ### One to infinity
 
-Append `+` to any type to accept one or more of this type. The following signature will accept an array containing one or more strings.
+Append `+` to any type to accept one or more values of this type. The following signature will accept an array containing one or more strings.
 
 `("names: [string+]")`
 
 ### Specific number
 
-Append `{count}` to any type, where `count` is an integer, to accept this many repetitions of the type. The following signature will accept an array containing 256 integers.
+Append `{count}` to any type, where `count` is an integer, to accept this many values of the type. The following signature will accept an array containing 256 integers.
 
 `("samples: [integer{256}]")`
 
 ### Range
 
-Append `{min,max}` to any type, where `min` and `max` are integers, to accept from `min` to `max` repetitions of the type. You can omit any of the two boundaries; the default value for `min` is 0, and the default value for `max` is infinity. The following signature will accept an array containing between 3 and 30 strings.
+Append `{min,max}` to any type, where `min` and `max` are integers, to accept from `min` to `max` values of the type. You can omit any of the two boundaries; the default value for `min` is 0, and the default value for `max` is infinity. The following signature will accept an array containing between 3 and 30 strings.
 
 `("students: [string{3,30}]")`
