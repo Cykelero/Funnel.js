@@ -102,6 +102,14 @@ common.internal.filterFunctions = {
 	},
 	default: function(key, action) {
 		if (this.args[key] === undefined) this.args[key] = action();
+	},
+	in: function(key, action, extra) {
+		var allowedValues = action(),
+			defaultIndex = parseInt(extra[0]) || 0;
+		
+		if (allowedValues.indexOf(this.args[key]) == -1) {
+			this.args[key] = allowedValues[defaultIndex];
+		}
 	}
 };
 
