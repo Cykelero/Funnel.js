@@ -34,7 +34,7 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: KG3.meta.either(result.produces)
 			});
-		}, true)
+		}, true);
 	},
 	
 	innerNameTypePairs: function(innerGeneratedPattern) {
@@ -54,7 +54,7 @@ var signaturePatterns = {
 				takes: result.takes,
 				produces: KG3.meta.list(result.produces)
 			});
-		}, true)
+		}, true);
 	},
 	
 	enclosedNameTypePairs: function(innerGeneratedPattern) {
@@ -196,7 +196,7 @@ var signaturePatterns = {
 				"[",
 				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.attributeType)),
 				"]"
-			])
+			]);
 		}, function(result) {
 			this.return({
 				matches: true,
@@ -211,7 +211,7 @@ var signaturePatterns = {
 				signaturePatterns.namedValueList,
 				KG3.meta.optional(KG3.meta.whsp("/", 1)),
 				"]"
-			])
+			]);
 		}, function(result) {
 			var strictMatch = !!result.produces[2];
 			
@@ -235,7 +235,7 @@ var signaturePatterns = {
 				"{",
 				KG3.meta.optional(KG3.meta.whsp(signaturePatterns.attributeType)),
 				"}"
-			])
+			]);
 		}, function(result) {
 			this.return({
 				matches: true,

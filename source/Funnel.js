@@ -10,8 +10,5 @@ var exposed = function(firstSignature) {
 	return instance.getRemote()(firstSignature);
 };
 
-// Internal
-var internal = {};
-
 return exposed;
 })();

@@ -38,6 +38,7 @@ common.exposed = function(signatureString) {
 		return mappedArguments;
 	};
 	
+	// Internal methods
 	internal.executeFilterFunction = function(args, info) {
 		var currentKeyName = null;
 		
@@ -64,7 +65,7 @@ common.exposed = function(signatureString) {
 			return info.action.call(getCurrentKeyValue, injectedValues);
 		};
 		
-		function getCurrentKeyValue() {
+		var getCurrentKeyValue = function() {
 			return args[currentKeyName];
 		};
 		
@@ -76,11 +77,8 @@ common.exposed = function(signatureString) {
 		});
 	};
 	
-	// Internal methods
-	
 	// Init
 	internal.generated = FunnelInstanceSignaturePattern(signatureString);
-	
 };
 
 common.exposed.getFilterFunctionNames = function() {

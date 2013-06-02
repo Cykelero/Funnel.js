@@ -2,7 +2,6 @@
 // needs injector.js
 // needs +Signature.js
 
-
 var FunnelInstance = (function() {
 
 var common = {};
@@ -13,12 +12,12 @@ common.exposed = function() {
 	var internal = {};
 	var self = this;
 	
+	internal.remote = null;
+	
 	internal.currentSignature = null;
 	internal.signatures = [];
 	internal.nakedFunction = null;
 	internal.injectableFunction = null;
-	
-	internal.remote = null;
 	
 	// Exposed methods
 	exposed.getRemote = function() {
@@ -77,11 +76,11 @@ common.exposed = function() {
 	};
 	
 	internal.callWithArguments = function(self, args) {
-		for (var i = 0 ; i < internal.signatures.length ; i++) {
-			var mappedArguments = internal.signatures[i].applyTo(self, args);
+		internal.signatures.forEach(function(signature) {
+			var mappedArguments = signature.applyTo(self, args);
 			
 			if (mappedArguments) {
-				// The signature matches: executing
+				// The signature matches: execute the fonction
 				var injectedArguments = {};
 				
 				for (var key in mappedArguments) {
@@ -95,8 +94,11 @@ common.exposed = function() {
 				
 				return internal.injectableFunction.call(self, injectedArguments);
 			};
-		}
-		return null; // [todo] define how to define fail behavior.
+		});
+		
+		// No signature matched
+		
+		return null;
 	};
 	
 	internal.makeAugmentedFunction = function() {
@@ -122,9 +124,6 @@ common.exposed = function() {
 	
 	internal.remote = Remote.make(this, baseRemoteMethod, remoteMethods);
 };
-
-// Internal
-common.internal = {};
 
 return common.exposed;
 })();
