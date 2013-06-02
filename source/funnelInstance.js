@@ -79,8 +79,21 @@ common.exposed = function() {
 	internal.callWithArguments = function(self, args) {
 		for (var i = 0 ; i < internal.signatures.length ; i++) {
 			var mappedArguments = internal.signatures[i].applyTo(self, args);
+			
 			if (mappedArguments) {
-				return internal.injectableFunction.call(self, mappedArguments);
+				// The signature matches: executing
+				var injectedArguments = {};
+				
+				for (var key in mappedArguments) {
+					if (mappedArguments.hasOwnProperty(key)) {
+						injectedArguments[key] = mappedArguments[key];
+					}
+				}
+				
+				injectedArguments._all = mappedArguments;
+				injectedArguments._original = Array.prototype.slice.call(args, 0);
+				
+				return internal.injectableFunction.call(self, injectedArguments);
 			};
 		}
 		return null; // [todo] define how to define fail behavior.
