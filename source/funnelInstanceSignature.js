@@ -91,6 +91,15 @@ common.exposed.getFilterFunctionNames = function() {
 	return names;
 };
 
+common.exposed.addFilterFunction = function(name, behavior) {
+	var filterFunctions = common.internal.filterFunctions;
+	if (!filterFunctions[name]) {
+		filterFunctions[name] = behavior;
+	} else {
+		throw new Error("There is already a filter function named “" + name + "”.");
+	}
+};
+
 // Internal
 common.internal = {};
 
