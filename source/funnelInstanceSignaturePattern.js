@@ -479,7 +479,7 @@ var arglistPatterns = {
 				}
 			}
 			
-			if (matches) {
+			if (matches && position < data.length) {
 				this.return({
 					matches: true,
 					takes: 1,
@@ -494,7 +494,7 @@ var arglistPatterns = {
 		return KG3.pattern(function(data, position) {
 			var value = data[position];
 			
-			if (value === toMatch) {
+			if (value === toMatch && position < data.length) {
 				this.return({
 					matches: true,
 					takes: 1,
