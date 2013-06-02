@@ -58,7 +58,7 @@ common.exposed = function(signatureString) {
 			}
 			
 			injectedValues._name = currentKeyName;
-			injectedValues._args = args;
+			injectedValues._all = args;
 			
 			// Call the action function
 			return info.action.call(getCurrentKeyValue, injectedValues);

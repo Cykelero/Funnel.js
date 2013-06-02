@@ -142,10 +142,10 @@ this.addDescription("Family reunion", "Stanley Park", 2011); // returns “Famil
 // to act on arguments with non-valid names, you can pass their name as the first argument, instead of naming the function
 
 ("`Content-Type`: string, outputAsText: boolean")
-	.default(function outputAsText(_args) {
-		return /^text\b/.test(_args["Content-Type"]);
+	.default(function outputAsText(_all) {
+		return /^text\b/.test(_all["Content-Type"]);
 	})
-// to use an argument that can't be injected because of its name, you can request the _args map instead
+// to use an argument that can't be injected because of its name, you can request the _all map instead
 
 ("`Content-Type`: string")
 	.default("Content-Type", "text/html")
