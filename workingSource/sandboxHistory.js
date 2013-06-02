@@ -45,14 +45,18 @@ testFunc(true, window);
 
 
 setWidth = Funnel
-	("width: number, height: number")
-	.set(["width", "height"], function() {
-		return this() + "px";
+	("width: number, height: number?, units: string?")
+	.default("height", function(width) {
+		return width;
+	})
+	.in("units", ["px", "em"])
+	.set(["width", "height"], function(units) {
+		return this() + units;
 	})
 (function(width, height) {
 	console.log(width);
 	console.log(height);
 })
 
-setWidth(48, 50);
+setWidth(48, "em");
 
