@@ -8,8 +8,8 @@ Filter functions are signature-specific. To add a filter function call to a sign
 
 The following signature and filter accept a optional string, that is set to “none” if omitted.
 
-    ("display: string?")
-    .default("display", "none")
+	("display: string?")
+	.default("display", "none")
 
 ## Call styles
 
@@ -35,9 +35,9 @@ The primary argument is a function, of which the name is used as the affected ke
 
 For instance, the following filter function sets the “seed” argument to a random number between 0 and 1.
 
-    .set(function seed() {
-        return Math.random();
-    })
+	.set(function seed() {
+		return Math.random();
+	})
 
 ## Injected arguments
 
@@ -56,9 +56,9 @@ Value provider functions can call `this` as a function to get the current value 
 
 For instance, the following filter function appends “px” to the current value of the `width` argument.
 
-    .set(function width() {
-    	return this() + "px";
-    })
+	.set(function width() {
+		return this() + "px";
+	})
 
 ## Filter function types
 
@@ -80,4 +80,4 @@ The default value is the item in the provided array, at the index designated by 
 
 For instance, the following filter will set `gender` to “F” for any value other than “M” or “F”.
 
-    .in("gender", ["M", "F"], 1)
+	.in("gender", ["M", "F"], 1)
