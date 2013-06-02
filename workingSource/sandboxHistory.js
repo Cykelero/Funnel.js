@@ -44,7 +44,7 @@ testFunc(true, window);
 
 
 
-setWidth = Funnel
+setSize = Funnel
 	("width: number, height: number?, units: string?")
 	.default("height", function(width) {
 		return width;
@@ -58,5 +58,5 @@ setWidth = Funnel
 	console.log(height);
 })
 
-setWidth(48, "em");
+setSize(48, "em");
 
