@@ -76,6 +76,9 @@ common.exposed = function() {
 	};
 	
 	internal.callWithArguments = function(self, args) {
+		var success = false,
+			returnedValue = null;
+		
 		internal.signatures.forEach(function(signature) {
 			var mappedArguments = signature.applyTo(self, args);
 			
@@ -92,13 +95,17 @@ common.exposed = function() {
 				injectedArguments._all = mappedArguments;
 				injectedArguments._original = Array.prototype.slice.call(args, 0);
 				
-				return internal.injectableFunction.call(self, injectedArguments);
+				success = true;
+				returnedValue = internal.injectableFunction.call(self, injectedArguments);
+				return
 			};
 		});
 		
-		// No signature matched
-		
-		return null;
+		if (success) {
+			return returnedValue;
+		} else {
+			return null;
+		}
 	};
 	
 	internal.makeAugmentedFunction = function() {
