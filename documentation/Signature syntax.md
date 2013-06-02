@@ -49,6 +49,9 @@ This does not apply to specific types.
 
 `function`: Any function.
 
+`node`: Any node, including any HTML element.
+
+
 #### Precise numbers
 
 `float`: Any number that isn't NaN.

@@ -423,6 +423,11 @@ var arglistPatterns = {
 					matches = (value === null)
 						|| (valueType != "object");
 					break;
+				case "node":
+					matches = valueType == "object"
+						&& typeof(value.nodeType) == "number"
+						&& typeof(value.nodeName) == "string";
+					break;
 				// Precise numbers
 				case "float":
 					matches = (valueType == "number" && !isNaN(value));
