@@ -56,17 +56,20 @@ common.exposed = function() {
 			keys = [arg0.name];
 			action = arg0;
 			extra = args.slice(1);
-		} else if (type0 == "string") {
-			keys = [arg0];
-			action = (type1 == "function")
-				? arg1
-				: function() { return arg1 };
-			extra = args.slice(2);
-		} else if (type0 == "object") {
-			keys = arg0;
-			action = (type1 == "function")
-				? arg1
-				: function() { return arg1 };
+		} else {
+			if (type0 == "string") {
+				keys = [arg0];
+			} else {
+				keys = arg0;
+			}
+			
+			if (type1 == "function") {
+				action = arg1;
+			} else {
+				action = function() {
+					return arg1
+				};
+			}
 			extra = args.slice(2);
 		}
 		
