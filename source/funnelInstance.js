@@ -16,19 +16,22 @@ common.exposed = function() {
 	
 	internal.currentSignature = null;
 	internal.signatures = [];
+	
 	internal.nakedFunction = null;
 	internal.injectableFunction = null;
+	internal.failHandler = null;
 	
 	// Exposed methods
 	exposed.getRemote = function() {
 		return internal.remote;
 	};
 	
-	var baseRemoteMethod = function(arg) {
-		if (typeof(arg) == "string") {
-			internal.addSignature(arg);
-		} else if (typeof(arg) == "function") {
-			internal.setFunneledFunction(arg);
+	var baseRemoteMethod = function(arg1, arg2) {
+		if (typeof(arg1) == "string") {
+			internal.addSignature(arg1);
+		} else if (typeof(arg1) == "function") {
+			internal.setFunneledFunction(arg1);
+			if (typeof(arg2) == "function") internal.setFailHandler(arg2);
 			return internal.makeAugmentedFunction();
 		}
 	};
@@ -75,6 +78,10 @@ common.exposed = function() {
 		internal.injectableFunction = Injector.prepare(func);
 	};
 	
+	internal.setFailHandler = function(func) {
+		internal.failHandler = Injector.prepare(func);
+	};
+	
 	internal.callWithArguments = function(self, args) {
 		var success = false,
 			returnedValue = null;
@@ -104,7 +111,11 @@ common.exposed = function() {
 		if (success) {
 			return returnedValue;
 		} else {
-			return null;
+			if (internal.failHandler) {
+				return internal.failHandler.call(self, {_original: Array.prototype.slice.call(args, 0)});
+			} else {
+				return null;
+			}
 		}
 	};
 	
