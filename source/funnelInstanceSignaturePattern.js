@@ -1,4 +1,5 @@
 // needs kg3.js
+// needs cacheRepository.js
 
 var FunnelInstanceSignaturePattern = (function() {
 
@@ -683,25 +684,34 @@ var arglistPatterns = {
 };
 
 return function(signatureString) {
-	// Try generating a signature pattern
-	var signaturePatternGenerator = signaturePatterns.root(signatureString),
-		result = null,
-		reach = 0,
-		generated;
+	var signaturePattern,
+		reach = 0;
 	
-	do {
-		result = signaturePatternGenerator.getNext();
-		reach = Math.max(reach, signaturePatternGenerator.getReach());
-		if (result.takes == signatureString.length) {
-			generated = result.produces;
-			break;
+	signaturePattern = CacheRepository.get("signature", signatureString);
+	
+	if (!signaturePattern) {
+		// Try generating a signature pattern
+		var signaturePatternGenerator = signaturePatterns.root(signatureString),
+			result = null;
+		
+		do {
+			result = signaturePatternGenerator.getNext();
+			reach = Math.max(reach, signaturePatternGenerator.getReach());
+			if (result.takes == signatureString.length) {
+				signaturePattern = result.produces;
+				break;
+			}
+		} while (signaturePatternGenerator.hasNext());
+		
+		if (signaturePattern) {
+			CacheRepository.set("signature", signatureString, signaturePattern);
 		}
-	} while (signaturePatternGenerator.hasNext());
+	}
 	
 	// Return
-	if (generated) {
+	if (signaturePattern) {
 		return function(arglist) {
-			return generated(arglist).getNext().produces;
+			return signaturePattern(arglist).getNext().produces;
 		}
 	} else {
 		var errorReport = "Failed to parse signature string; error around character " + reach + ":";
