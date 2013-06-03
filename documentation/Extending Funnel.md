@@ -26,19 +26,21 @@ The `this` object currently has a single property, `args`. Use this map to both 
 
 As examples, here are the filter function definitions for `set`, `default` and `in`.
 
-	Funnel.add.filterFunction("set", function(key, action) {
-		this.args[key] = action();
-	});
+```javascript
+Funnel.add.filterFunction("set", function(key, action) {
+	this.args[key] = action();
+});
 
-	Funnel.add.filterFunction("default", function(key, action) {
-		if (this.args[key] === undefined) this.args[key] = action();
-	});
+Funnel.add.filterFunction("default", function(key, action) {
+	if (this.args[key] === undefined) this.args[key] = action();
+});
 
-	Funnel.add.filterFunction("in", function(key, action, extra) {
-		var allowedValues = action(),
-			defaultIndex = parseInt(extra[0]) || 0;
-		
-		if (allowedValues.indexOf(this.args[key]) == -1) {
-			this.args[key] = allowedValues[defaultIndex];
-		}
-	});
+Funnel.add.filterFunction("in", function(key, action, extra) {
+	var allowedValues = action(),
+		defaultIndex = parseInt(extra[0]) || 0;
+	
+	if (allowedValues.indexOf(this.args[key]) == -1) {
+		this.args[key] = allowedValues[defaultIndex];
+	}
+});
+```

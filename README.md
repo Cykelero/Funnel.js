@@ -4,19 +4,21 @@ Write functions that accept flexible arguments using a powerful signature syntax
 
 Have a look:
 
-	this.setSize = Funnel
-		("width: number, height: number?, units: string?")
-		.default(function height(width) {
-			return width;
-		})
-		.in("units", ["px", "em"])
-		.set(["width", "height"], function(units) {
-			return this() + units;
-		})
-	(function(width, height) {
-		this.style.width = width;
-		this.style.height = height;
-	});
+```javascript
+this.setSize = Funnel
+	("width: number, height: number?, units: string?")
+	.default(function height(width) {
+		return width;
+	})
+	.in("units", ["px", "em"])
+	.set(["width", "height"], function(units) {
+		return this() + units;
+	})
+(function(width, height) {
+	this.style.width = width;
+	this.style.height = height;
+});
+```
 
 `setSize` will accept one to three arguments, and map them automatically. If `height` isn't passed, it will default to the same value as `width`. If `units` is omitted, or isn't either “px” or “em”, it will be set to “px”. Finally, the unit is appended to the sizes before they are passed to the actual function.
 

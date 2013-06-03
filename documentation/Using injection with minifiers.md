@@ -6,11 +6,13 @@ Injection hints are simply the same list of arguments as in your function defini
 
 For instance, the following function is minifier-proof:
 
-	setSize = Funnel
-		("width: number, height: number")
-	(function(width, height) {
-		/width, height/;
-		console.log(width + ", " + height);
-	})
+```javascript
+setSize = Funnel
+	("width: number, height: number")
+(function(width, height) {
+	/width, height/;
+	console.log(width + ", " + height);
+})
+```
 
 If possible, it is recommended to insert the hints before minification automatically, as part of your building process.

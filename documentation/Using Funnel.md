@@ -7,19 +7,21 @@ To funnel a function, use the `Funnel` object as a starting point. Add signature
 
 Here is a typical funneled function.
 
-	this.setSize = Funnel
-		("width: number, height: number?, units: string?")
-		.default("height", function(width) {
-			return width;
-		})
-		.in("units", ["px", "em"])
-		.set(["width", "height"], function(units) {
-			return this() + units;
-		})
-	(function(width, height) {
-		this.style.width = width;
-		this.style.height = height;
+```javascript
+this.setSize = Funnel
+	("width: number, height: number?, units: string?")
+	.default("height", function(width) {
+		return width;
 	})
+	.in("units", ["px", "em"])
+	.set(["width", "height"], function(units) {
+		return this() + units;
+	})
+(function(width, height) {
+	this.style.width = width;
+	this.style.height = height;
+})
+```
 
 This function has a single signature. The signature accepts a number, followed by an optional number, and an optional string.
 
@@ -58,13 +60,15 @@ The `_original` argument described above is injected into the fail handler.
 
 As an example, the sample code below will output “Invalid id: test” to the console.
 
-	getUser = Funnel
-		("id: number")
-	(function (id) {
-		return […];
-	},
-	 function(_original) {
-		 console.log("Invalid id: " + _original[0]);
-	});
-	
-	getUser("test");
+```javascript
+getUser = Funnel
+	("id: number")
+(function (id) {
+	return […];
+},
+ function(_original) {
+	 console.log("Invalid id: " + _original[0]);
+});
+
+getUser("test");
+```
