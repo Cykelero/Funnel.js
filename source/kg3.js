@@ -1,4 +1,4 @@
-/* KG3.js 0.3 - Nathan Manceaux-Panot (@Cykelero) */
+/* KG3.js 0.4 - Nathan Manceaux-Panot (@Cykelero) */
 /* A library to define and apply arbitrary grammars. */
 
 var KG3;
@@ -21,8 +21,10 @@ common.exposed = function(behavior) {
 	
 	internal.data = null;
 	internal.position = null;
+	
 	internal.branchingPoints = null;
 	internal.hasNext = null;
+	internal.reach = null;
 	
 	
 	// Exposed methods
@@ -36,11 +38,25 @@ common.exposed = function(behavior) {
 	};
 	
 	exposed.getNext = function() {
+		internal.reach = null;
+		return internal.getNext();
+	};
+	
+	exposed.getReach = function() {
+		return internal.reach;
+	};
+	
+	exposed.hasNext = function() {
+		return internal.hasNext;
+	};
+	
+	// Internal methods
+	internal.getNext = function() {
 		if (!internal.hasNext) {
 			return {
 				matches: false,
 				takes: null,
-				produces: null,
+				produces: undefined,
 				branches: false
 			};
 		};
@@ -113,6 +129,7 @@ common.exposed = function(behavior) {
 				var patternInstance = pattern().init(data, position);
 				this.branch(function() {
 					var result = patternInstance.getNext();
+					internal.extendReachTo(patternInstance.getReach());
 					
 					if (result.matches || acceptFails) {
 						behavior.call(this, result);
@@ -144,6 +161,9 @@ common.exposed = function(behavior) {
 			environment.returnFail();
 		}
 		
+		// Reach calculation
+		internal.extendReachTo(internal.position + returnObject.takes);
+		
 		// Disabling the environment
 		common.internal.disable(environment, "The “this” object you calling the {methodName}() method on is no longer valid. If you are trying to pass a context to a custom function, please do so using an argument, or the call() method.");
 		
@@ -163,12 +183,12 @@ common.exposed = function(behavior) {
 			return returnObject;
 		} else {
 			// No match, but can still branch: retrying
-			return this.getNext();
+			return internal.getNext();
 		}
 	};
 	
-	exposed.hasNext = function() {
-		return internal.hasNext;
+	internal.extendReachTo = function(reach) {
+		internal.reach = Math.max(internal.reach, reach);
 	};
 };
 
