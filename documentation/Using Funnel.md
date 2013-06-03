@@ -35,11 +35,11 @@ For instance, the following call will cause box to assume a size of 33em by 33em
 
 ## Signatures
 
-The powerful syntax of signatures is detailed in the *Signature syntax* document.
+The powerful syntax of signatures is detailed in [Signature syntax](Signature%20syntax.md).
 
 ## Filter functions
 
-Usage of filter functions is detailed in the *Using filter functions* document.
+Usage of filter functions is detailed in [Using filter functions](Using%20filter%20functions.md).
 
 ## Argument injection
 
