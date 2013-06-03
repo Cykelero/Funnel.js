@@ -1,4 +1,4 @@
-# Global Funnel usage
+# Using Funnel
 
 A funneled function has one or more signatures, and each signature has zero or more filter function calls.  
 In addition to providing a function to be funneled, you can provide a second function to be called when no signature has successfully matched.

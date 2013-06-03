@@ -1,4 +1,4 @@
-# Filter function usage
+# Using filter functions
 
 ## Basic usage
 
