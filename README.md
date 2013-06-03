@@ -26,7 +26,7 @@ You probably guessed most of this simply by reading the code; that's half of the
 
 The code snippet above should give you a pretty good idea of how Funnel.js works. The next thing to read would be the [Overview](documentation/Overview.js), which will give you a quick tour of Funnel's signature syntax and filter functions.
 
-If you want more detailed information, have a look at the comprehensive documentation: [Using Funnel](Using%20Funnel.md), [Signature syntax](Signature%20syntax.md), and [Using filter functions](Using%20filter%20functions.md).
+If you want more detailed information, have a look at the comprehensive documentation: [Using Funnel](documentation/Using%20Funnel.md), [Signature syntax](documentation/Signature%20syntax.md), and [Using filter functions](documentation/Using%20filter%20functions.md).
 
 ## Download
 
@@ -40,4 +40,4 @@ You can download the [latest release version][release_download] of Funnel.js, or
 - **Doesn't this impact performance?**  
   Yes, it does. Funnel.js does introduce overhead, and you probably shouldn't funnel performance-critical functions. Funnel.js is best suited for exposing APIs when you write your own libraries, and should be avoided for functions you want to execute, like, super fast.
 - **Doesn't minification interfere with injection?**  
-  Yup. To counter that, you can add hints to your injection-ready functions. Read all about hints here in [Using injection with minifiers](Using%20injection%20with%20minifiers.md).
+  Yup. To counter that, you can add hints to your injection-ready functions. Read all about hints here in [Using injection with minifiers](documentation/Using%20injection%20with%20minifiers.md).
