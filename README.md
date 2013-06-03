@@ -32,8 +32,8 @@ If you want more detailed information, have a look at the comprehensive document
 
 You can download the [latest release version][release_download] of Funnel.js, or download the [uncompressed version][dev_download] for easier development.
 
-[release_download]: http://cykeprojects.com/libraries/funnel/latest
-[dev_download]: http://cykeprojects.com/libraries/funnel/latest.min
+[release_download]: http://cykeprojects.com/libraries/funnel/latest.min
+[dev_download]: http://cykeprojects.com/libraries/funnel/latest
 
 ## Caveats
 
