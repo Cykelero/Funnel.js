@@ -683,26 +683,32 @@ var arglistPatterns = {
 };
 
 return function(signatureString) {
+	// Try generating a signature pattern
 	var signaturePatternGenerator = signaturePatterns.root(signatureString),
 		result = null,
+		reach = 0,
 		generated;
 	
 	do {
 		result = signaturePatternGenerator.getNext();
+		reach = Math.max(reach, signaturePatternGenerator.getReach());
 		if (result.takes == signatureString.length) {
 			generated = result.produces;
 			break;
 		}
 	} while (signaturePatternGenerator.hasNext());
 	
+	// Return
 	if (generated) {
 		return function(arglist) {
 			return generated(arglist).getNext().produces;
 		}
 	} else {
-		return function() {
-			return null;
-		}
+		var errorReport = "Failed to parse signature string; error around character " + reach + ":";
+		errorReport += "\n" + signatureString;
+		errorReport += "\n" + (new Array(reach + 1).join(" ")) + "^";
+		
+		throw new Error(errorReport);
 	}
 }
 
