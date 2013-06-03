@@ -35,9 +35,9 @@ You can download the [latest release version][release_download] of Funnel.js, or
 [release_download]: http://cykeprojects.com/libraries/funnel/latest
 [dev_download]: http://cykeprojects.com/libraries/funnel/latest.min
 
-## “Wait a minute!”
+## Caveats
 
-- **“Doesn't this impact performance?”**  
+- **Doesn't this impact performance?**  
   Yes, it does. Funnel.js does introduce overhead, and you probably shouldn't funnel performance-critical functions. Funnel.js is best suited for exposing APIs when you write your own libraries, and should be avoided for functions you want to execute, like, super fast.
-- **“Doesn't minification interfere with injection?”**  
+- **Doesn't minification interfere with injection?**  
   Yup. To counter that, you can add hints to your injection-ready functions. Read all about hints here in [Using injection with minifiers](Using%20injection%20with%20minifiers.md).
