@@ -39,7 +39,7 @@ The powerful syntax of signatures is detailed in the *Signature syntax* document
 
 ## Filter functions
 
-Usage of filter functions is detailed in the *Filter function usage* document.
+Usage of filter functions is detailed in the *Using filter functions* document.
 
 ## Argument injection
 
