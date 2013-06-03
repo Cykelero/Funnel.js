@@ -276,7 +276,7 @@ var signaturePatterns = {
 		}, true),
 		// // Specific number
 		KG3.patternUsingPattern(KG3.meta.either([
-			/(\+|\-)\d*.\d*/
+			/(\+|\-)\d*\.\d*/
 		]), function(result) {
 			var numberToMatch = parseFloat(result.produces);
 			
