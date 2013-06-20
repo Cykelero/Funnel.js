@@ -20,6 +20,7 @@ common.exposed = function(options) {
 	internal.nakedFunction = null;
 	internal.injectableFunction = null;
 	internal.failHandler = null;
+	internal.augmentedFunction = null
 	
 	internal.options = options;
 	
@@ -34,8 +35,14 @@ common.exposed = function(options) {
 		} else if (typeof(arg1) == "function") {
 			internal.setFunneledFunction(arg1);
 			if (typeof(arg2) == "function") internal.setFailHandler(arg2);
-			return internal.makeAugmentedFunction();
+			internal.makeAugmentedFunction();
+			
+			return exposed.getAugmentedFunction()
 		}
+	};
+	
+	exposed.getAugmentedFunction = function() {
+		return internal.augmentedFunction;
 	};
 	
 	// Internal methods
@@ -143,6 +150,7 @@ common.exposed = function(options) {
 		};
 		augmented.naked = internal.nakedFunction;
 		
+		internal.augmentedFunction = augmented;
 		return augmented;
 	};
 	
