@@ -6,13 +6,15 @@ var FunnelInstanceSignature = (function() {
 var common = {};
 
 // Exposed
-common.exposed = function(signatureString) {
+common.exposed = function(signatureString, options) {
 	var exposed = this;
 	var internal = {};
 	var self = this;
 	
 	internal.generated = null;
 	internal.filterFunctions = [];
+	
+	internal.options = options;
 	
 	// Exposed methods
 	exposed.addFilterFunction = function(name, keys, action, extra) {

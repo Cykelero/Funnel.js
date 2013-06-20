@@ -40,7 +40,7 @@ common.exposed = function(options) {
 	
 	// Internal methods
 	internal.addSignature = function(signatureString) {
-		var newSignature = new FunnelInstanceSignature(signatureString)
+		var newSignature = new FunnelInstanceSignature(signatureString, internal.options)
 		
 		internal.signatures.push(newSignature);
 		internal.currentSignature = newSignature;
