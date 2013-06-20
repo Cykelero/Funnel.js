@@ -517,7 +517,7 @@ var arglistPatterns = {
 			
 			// Fulfilling the specified conditions
 			if (filter) {
-				var preparedFilter = filter(value),
+				var preparedFilter = filter(value).with(this.options),
 					result = null,
 					success = false;
 				
@@ -591,7 +591,7 @@ var arglistPatterns = {
 			for (var p in value) {
 				if (value.hasOwnProperty(p)) {
 					var prop = value[p];
-					if (!filter([prop]).getNext().matches) return;
+					if (!filter([prop]).with(this.options).getNext().matches) return;
 				}
 			}
 			
@@ -611,7 +611,7 @@ var arglistPatterns = {
 			if (typeof(value) != "object") return;
 			if (value.__proto__ == Array.prototype) return;
 			
-			var result = filter(value).getNext();
+			var result = filter(value).with(this.options).getNext();
 			
 			if (!result.matches) return;
 			
@@ -648,7 +648,7 @@ var arglistPatterns = {
 	getKeyWithFilter: function(name, typeFilter) {
 		return KG3.pattern(function(data, position) {
 			var value = data[name],
-				preparedFilter = typeFilter([value]),
+				preparedFilter = typeFilter([value]).with(this.options),
 				filterResult = preparedFilter.getNext();
 			
 			var matches;
@@ -683,7 +683,7 @@ var arglistPatterns = {
 	}
 };
 
-return function(signatureString) {
+return function(signatureString, options) {
 	var signaturePattern,
 		reach = 0;
 	
@@ -691,7 +691,7 @@ return function(signatureString) {
 	
 	if (!signaturePattern) {
 		// Try generating a signature pattern
-		var signaturePatternGenerator = signaturePatterns.root(signatureString),
+		var signaturePatternGenerator = signaturePatterns.root(signatureString).with(options),
 			result = null;
 		
 		do {
@@ -711,8 +711,8 @@ return function(signatureString) {
 	// Return
 	if (signaturePattern) {
 		return function(arglist) {
-			return signaturePattern(arglist).getNext().produces;
-		}
+			return signaturePattern(arglist).with(options).getNext().produces;
+		};
 	} else {
 		var errorReport = "Failed to parse signature string; error around character " + reach + ":";
 		errorReport += "\n" + signatureString;

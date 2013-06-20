@@ -85,7 +85,7 @@ common.exposed = function(signatureString, options) {
 	};
 	
 	// Init
-	internal.generated = FunnelInstanceSignaturePattern(signatureString);
+	internal.generated = FunnelInstanceSignaturePattern(signatureString, internal.options);
 };
 
 common.exposed.getFilterFunctionNames = function() {
