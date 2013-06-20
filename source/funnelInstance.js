@@ -91,7 +91,8 @@ common.exposed = function(options) {
 		var success = false,
 			returnedValue = null;
 		
-		internal.signatures.forEach(function(signature) {
+		for (var i = 0 ; i < internal.signatures.length ; i++) {
+			var signature = internal.signatures[i];
 			var mappedArguments = signature.applyTo(self, args);
 			
 			if (mappedArguments) {
@@ -107,11 +108,12 @@ common.exposed = function(options) {
 				injectedArguments._all = mappedArguments;
 				injectedArguments._original = Array.prototype.slice.call(args, 0);
 				
-				success = true;
 				returnedValue = internal.injectableFunction.call(self, injectedArguments);
-				return
+				
+				success = true;
+				break;
 			};
-		});
+		};
 		
 		if (success) {
 			return returnedValue;
