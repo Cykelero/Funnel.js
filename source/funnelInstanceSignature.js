@@ -60,8 +60,9 @@ common.exposed = function(signatureString, options) {
 				}
 			}
 			
-			injectedValues._name = currentKeyName;
 			injectedValues._all = args;
+			injectedValues._name = currentKeyName;
+			if (extraInjectedValues) injectedValues._extra = extraInjectedValues;
 			
 			// Call the action function
 			return info.action.call(getCurrentKeyValue, injectedValues);

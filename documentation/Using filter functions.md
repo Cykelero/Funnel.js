@@ -51,6 +51,7 @@ All the arguments defined so far get injected in the filter function. In additio
 
 - `_all`: This is a map of all the arguments. Use this instead of directly injecting the argument, if its name is not a valid JavaScript variable name.
 - `_name`: This is the name of the argument currently being modified by the filter function.
+- `_extra`: This is a map of the filter function-specific arguments described below. The keys are stripped of their leading underscore.
 
 Some filter functions may inject additional arguments. Such arguments are always prefixed with an underscore.
 

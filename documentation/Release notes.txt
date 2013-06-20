@@ -1,4 +1,6 @@
 Funnel.js 0.2 (2013-06-XX)
+ - Added injection of “_extra” in filter functions
+
  - Fixed funneled functions being executed multiple times when multiple signatures matched
 
 Funnel.js 0.1 (2013-06-03)
