@@ -65,7 +65,11 @@ common.exposed = function(signatureString, options) {
 			if (extraInjectedValues) injectedValues._extra = extraInjectedValues;
 			
 			// Call the action function
-			return info.action.call(getCurrentKeyValue, injectedValues);
+			var values = internal.options.useInjection
+				? injectedValues
+				: [injectedValues._all, injectedValues._name, injectedValues._extra];
+			
+			return info.action.call(getCurrentKeyValue, values);
 		};
 		
 		var getCurrentKeyValue = function() {

@@ -108,7 +108,11 @@ common.exposed = function(options) {
 				injectedArguments._all = mappedArguments;
 				injectedArguments._original = Array.prototype.slice.call(args, 0);
 				
-				returnedValue = internal.injectableFunction.call(self, injectedArguments);
+				var args = internal.options.useInjection
+					? injectedArguments
+					: [injectedArguments._all, injectedArguments._original];
+				
+				returnedValue = internal.injectableFunction.call(self, args);
 				
 				success = true;
 				break;
@@ -119,7 +123,13 @@ common.exposed = function(options) {
 			return returnedValue;
 		} else {
 			if (internal.failHandler) {
-				return internal.failHandler.call(self, {_original: Array.prototype.slice.call(args, 0)});
+				var injectedArguments = {_original: Array.prototype.slice.call(args, 0)};
+				
+				var args = internal.options.useInjection
+					? injectedArguments
+					: [injectedArguments._original];
+				
+				return internal.failHandler.call(self, args);
 			} else {
 				return null;
 			}
