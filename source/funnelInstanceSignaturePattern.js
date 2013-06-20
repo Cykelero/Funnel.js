@@ -160,6 +160,7 @@ var signaturePatterns = {
 		KG3.patternUsingPattern(/\w+!?!?/, function(result) {
 			var type = result.produces;
 			
+			// Bang & kabang detection
 			var bang = type.slice(-1) == "!",
 				kabang = type.slice(-2, -1) == "!";
 			
@@ -171,10 +172,20 @@ var signaturePatterns = {
 				}
 			}
 			
+			// Based on this, are undefined & null allowed?
+			var allowUndefined, allowNull;
+			if (!this.options.defaultToStrictTypes) {
+				allowUndefined = !bang;
+				allowNull = !kabang;
+			} else {
+				allowNull = bang;
+				allowUndefined = kabang;
+			}
+			
 			this.return({
 				matches: true,
 				takes: result.takes,
-				produces: arglistPatterns.getValueOfType(type, !bang, !kabang)
+				produces: arglistPatterns.getValueOfType(type, allowUndefined, allowNull)
 			});
 		}, true),
 		// // Complete type, enclosed in parentheses

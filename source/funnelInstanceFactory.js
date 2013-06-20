@@ -42,6 +42,7 @@ common.exposed = function(options) {
 common.internal = {};
 
 common.internal.defaultOptions = {
+	defaultToStrictTypes: false,
 	useInjection: true
 };
 
