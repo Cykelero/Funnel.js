@@ -1,2 +1,4 @@
+Funnel.js 0.2 (2013-06-XX)
+
 Funnel.js 0.1 (2013-06-03)
  - Initial release!
