@@ -1,4 +1,4 @@
-/* KG3.js 0.4 - Nathan Manceaux-Panot (@Cykelero) */
+/* KG3.js 0.5 - Nathan Manceaux-Panot (@Cykelero) */
 /* A library to define and apply arbitrary grammars. */
 
 var KG3;
@@ -26,6 +26,8 @@ common.exposed = function(behavior) {
 	internal.hasNext = null;
 	internal.reach = null;
 	
+	internal.options = {};
+	
 	
 	// Exposed methods
 	exposed.init = function(data, position) {
@@ -35,6 +37,11 @@ common.exposed = function(behavior) {
 		internal.hasNext = true;
 		
 		return exposed;
+	};
+	
+	exposed.with = function(options) {
+		internal.options = options;
+		return self;
 	};
 	
 	exposed.getNext = function() {
@@ -80,7 +87,11 @@ common.exposed = function(behavior) {
 		
 		// Execution environment
 		var environment = {
-			return: function(object) {
+			// Accessors
+			options: internal.options,
+			
+			// Methods
+			"return": function(object) {
 				returnObject = object;
 			},
 			returnFail: function() {
@@ -126,7 +137,7 @@ common.exposed = function(behavior) {
 				var acceptFails = !failBehavior;
 				if (typeof(failBehavior) != "function") failBehavior = null;
 				
-				var patternInstance = pattern().init(data, position);
+				var patternInstance = pattern().init(data, position).with(internal.options);
 				this.branch(function() {
 					var result = patternInstance.getNext();
 					internal.extendReachTo(patternInstance.getReach());
