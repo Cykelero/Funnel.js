@@ -51,8 +51,7 @@ This does not apply to specific types.
 
 `node`: Any node, including any HTML element.
 
-
-#### Precise numbers
+##### Precise numbers
 
 `float`: Any number that isn't NaN.
 
@@ -74,7 +73,7 @@ This does not apply to specific types.
 `'•••'`: Any string equal to `•••`.
 
 
-`+•.•`: Any number equal to `•.•`. The decimal part is optional, and negative numbers are valid as well.
+`+•.•`: Any number equal to `•.•`. The decimal part is optional, and the plus sign can be substituted for a minus sign.
 
 
 `null`: Only null.
@@ -83,9 +82,9 @@ This does not apply to specific types.
 
 #### Modifiers
 
-`!`: When appended to a flat type, disallows `undefined`.
+`!`: When appended to a simple type, disallows `undefined`.
 
-`!!`: When appended to a flat type, disallows both `undefined` and `null`.
+`!!`: When appended to a simple type, disallows both `undefined` and `null`.
 
 ### Arrays
 
