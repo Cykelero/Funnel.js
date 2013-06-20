@@ -7,7 +7,7 @@ var FunnelInstance = (function() {
 var common = {};
 
 // Exposed
-common.exposed = function() {
+common.exposed = function(options) {
 	var exposed = this;
 	var internal = {};
 	var self = this;
@@ -20,6 +20,8 @@ common.exposed = function() {
 	internal.nakedFunction = null;
 	internal.injectableFunction = null;
 	internal.failHandler = null;
+	
+	internal.options = options;
 	
 	// Exposed methods
 	exposed.getRemote = function() {
