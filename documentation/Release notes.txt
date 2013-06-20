@@ -1,4 +1,4 @@
-Funnel.js 0.2 (2013-06-XX)
+Funnel.js 0.2 (2013-06-20)
  - Added Funnel.withOptions()
  - Added useInjection option
  - Added defaultToStrictTypes option
