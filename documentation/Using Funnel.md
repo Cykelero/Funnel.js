@@ -56,7 +56,11 @@ Additionally, two special arguments are injected:
 
 By default, if Funnel fails to match any signature to the arguments in a call, it returns `null`. You can instead execute custom code by passing a second function, called the fail handler, when defining the funneled function.
 
-The `_original` argument described above is injected into the fail handler.
+Three arguments are injected into the fail handler:
+
+- `_original`: As described above, contains the original arguments as an array.
+- `_callee`: The funneled function that was called. This is the wrapped function that the funneling process returned.
+- `_naked`: The original function, non-funneled.
 
 As an example, the sample code below will output “Invalid id: test” to the console.
 

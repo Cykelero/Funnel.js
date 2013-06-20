@@ -130,11 +130,15 @@ common.exposed = function(options) {
 			return returnedValue;
 		} else {
 			if (internal.failHandler) {
-				var injectedArguments = {_original: Array.prototype.slice.call(args, 0)};
+				var injectedArguments = {
+					_original: Array.prototype.slice.call(args, 0),
+					_callee: exposed.getAugmentedFunction(),
+					_naked: internal.nakedFunction
+				};
 				
 				var args = internal.options.useInjection
 					? injectedArguments
-					: [injectedArguments._original];
+					: [injectedArguments._original, injectedArguments._callee, injectedArguments._naked];
 				
 				return internal.failHandler.call(self, args);
 			} else {
