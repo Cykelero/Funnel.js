@@ -27,10 +27,17 @@ exposed.prepare = function(func) {
 	var injectable = function(values) {
 		// Use the `naked` attribute of this function to access the wrapped code
 		
-		var valueList = [];
-		requested.forEach(function(argName) {
-			valueList.push(values[argName]);
-		});
+		var valueList;
+		if (values.__proto__ != Array.prototype) {
+			// Argument map
+			valueList = [];
+			requested.forEach(function(argName) {
+				valueList.push(values[argName]);
+			});
+		} else {
+			// Argument array
+			valueList = values;
+		}
 		return func.apply(this, valueList);
 	};
 	
